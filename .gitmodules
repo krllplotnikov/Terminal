@@ -1,0 +1,24 @@
+[submodule "MCU/Core/Libraries/LED"]
+	path = MCU/Core/Libraries/LED
+	url = https://github.com/krllplotnikov-libraries/LED.git
+[submodule "MCU/Core/Libraries/Button"]
+	path = MCU/Core/Libraries/Button
+	url = https://github.com/krllplotnikov-libraries/Button.git
+[submodule "MCU/Core/Libraries/ST7789"]
+	path = MCU/Core/Libraries/ST7789
+	url = https://github.com/krllplotnikov-libraries/ST7789.git
+[submodule "MCU/Core/Libraries/MicroGFX"]
+	path = MCU/Core/Libraries/MicroGFX
+	url = https://github.com/krllplotnikov-libraries/MicroGFX.git
+[submodule "MCU/Core/Libraries/RC522"]
+	path = MCU/Core/Libraries/RC522
+	url = https://github.com/krllplotnikov-libraries/RC522.git
+[submodule "MCU/Core/Libraries/Keyboard3x4"]
+	path = MCU/Core/Libraries/Keyboard3x4
+	url = https://github.com/krllplotnikov-libraries/Keyboard3x4.git
+[submodule "MCU/Core/Libraries/Logger"]
+	path = MCU/Core/Libraries/Logger
+	url = https://github.com/krllplotnikov-libraries/Logger.git
+[submodule "MCU/Core/Libraries/W25Q"]
+	path = MCU/Core/Libraries/W25Q
+	url = https://github.com/krllplotnikov-libraries/W25Q.git

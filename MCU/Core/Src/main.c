@@ -22,12 +22,25 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "RC522.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
+#define ENABLE_USER_LOG   1
+#define ENABLE_DEBUG_LOG  0 // Test with this disabled
 
+#if ENABLE_USER_LOG
+  #define USER_LOG(fmt, ...) printf("[USER] " fmt "\r\n", ##__VA_ARGS__)
+#else
+  #define USER_LOG(fmt, ...)
+#endif
+
+#if ENABLE_DEBUG_LOG
+  #define DEBUG_LOG(fmt, ...) printf("[DEBUG] " fmt "\r\n", ##__VA_ARGS__)
+#else
+  #define DEBUG_LOG(fmt, ...)
+#endif
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -71,7 +84,52 @@ void StartDefaultTask(void *argument);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+uint8_t uid[4];
 
+void SPI_Transmit_RC522(RC522_st* rc522, uint8_t* txBuf, size_t size){
+	HAL_SPI_Transmit(&hspi1, txBuf, size, 5000);
+}
+void SPI_Receive_RC522(RC522_st* rc522, uint8_t* rxBuf, size_t size){
+	HAL_SPI_Receive(&hspi1, rxBuf, size, 5000);
+}
+void SPI_ChipSelect_RC522(RC522_st* rc522, uint8_t level){
+	HAL_GPIO_WritePin(RC522_CS_GPIO_Port, RC522_CS_Pin, level);
+}
+void Reset_RC522(RC522_st* rc522, uint8_t level){
+	HAL_GPIO_WritePin(RC522_RST_GPIO_Port, RC522_RST_Pin, level);
+}
+
+void RC522_CardEvent_Callback(RC522_st* rc522, RC522_CardEvent_et event){
+	if(event == RC522_CARD_DETECTED){
+		if (RC522_ReadUid(rc522, uid) == RC522_STATUS_OK){
+		  USER_LOG("CARD ID:%02X %02X %02X %02X", uid[0], uid[1], uid[2], uid[3]);
+		}
+		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
+	}
+	else if(event == RC522_CARD_REMOVED){
+		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
+	}
+}
+
+RC522_Descriptor_st RC522Descriptor = {
+		.getTick = HAL_GetTick,
+		.spiChipSelect = SPI_ChipSelect_RC522,
+		.spiTransmit = SPI_Transmit_RC522,
+		.spiReceive = SPI_Receive_RC522,
+		.reset = Reset_RC522,
+		.eventCallback = RC522_CardEvent_Callback,
+};
+
+RC522_st rc522 = {0};
+
+
+
+int _write(int fd, unsigned char *buf, int len) {
+  if (fd == 1 || fd == 2) {                     // stdout or stderr ?
+    HAL_UART_Transmit(&huart1, buf, len, 999);  // Print to the UART
+  }
+  return len;
+}
 /* USER CODE END 0 */
 
 /**
@@ -107,7 +165,7 @@ int main(void)
   MX_USART1_UART_Init();
   MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
-
+  RC522_Init(&rc522, &RC522Descriptor);
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -390,6 +448,7 @@ void StartDefaultTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
+	  RC522_Run(&rc522);
     osDelay(1);
   }
   /* USER CODE END 5 */
