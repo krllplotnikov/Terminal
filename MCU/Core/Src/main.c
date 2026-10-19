@@ -226,7 +226,7 @@ int main(void)
   ST7789_FillScreen(&display, RGB565(0, 0, 0));
 
   MicroGFX_Init(&gfxDisplay, &gfxDisplayDescriptor);
-  MicroGFX_DrawChar(&gfxDisplay, 40, 40, 'A', RGB565(255, 255, 255), MicroGFX_GetFontByType(&gfxDisplay, FONT_11X18));
+  MicroGFX_DrawChar(&gfxDisplay, 40, 40, 'A', RGB565(255, 255, 255), FONT_11X18);
   /* USER CODE END 2 */
 
   /* Init scheduler */
