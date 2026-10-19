@@ -23,6 +23,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "RC522.h"
+#include "ST7789.h"
+#include "MicroGFX.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -86,6 +88,7 @@ void StartDefaultTask(void *argument);
 /* USER CODE BEGIN 0 */
 uint8_t uid[4];
 
+//-----RC522-----
 void SPI_Transmit_RC522(RC522_st* rc522, uint8_t* txBuf, size_t size){
 	HAL_SPI_Transmit(&hspi1, txBuf, size, 5000);
 }
@@ -99,7 +102,7 @@ void Reset_RC522(RC522_st* rc522, uint8_t level){
 	HAL_GPIO_WritePin(RC522_RST_GPIO_Port, RC522_RST_Pin, level);
 }
 
-void RC522_CardEvent_Callback(RC522_st* rc522, RC522_CardEvent_et event){
+void CardEvent_Callback_RC522(RC522_st* rc522, RC522_CardEvent_et event){
 	if(event == RC522_CARD_DETECTED){
 		if (RC522_ReadUid(rc522, uid) == RC522_STATUS_OK){
 		  USER_LOG("CARD ID:%02X %02X %02X %02X", uid[0], uid[1], uid[2], uid[3]);
@@ -117,10 +120,61 @@ RC522_Descriptor_st RC522Descriptor = {
 		.spiTransmit = SPI_Transmit_RC522,
 		.spiReceive = SPI_Receive_RC522,
 		.reset = Reset_RC522,
-		.eventCallback = RC522_CardEvent_Callback,
+		.eventCallback = CardEvent_Callback_RC522,
 };
 
 RC522_st rc522 = {0};
+//-----RC522-----
+
+
+
+//-----ST7789-----
+void SPI_Transmit_ST7789(ST7789_st* st7789, uint8_t* data, size_t size){
+  HAL_SPI_Transmit(&hspi1, data, size, 5000);
+}
+void SPI_ChipSelect_ST7789(ST7789_st* st7789, uint8_t level){
+  HAL_GPIO_WritePin(ST7789_CS_GPIO_Port, ST7789_CS_Pin, level);
+}
+void SelectDataCommand_ST7789(ST7789_st* st7789, uint8_t level){
+  HAL_GPIO_WritePin(ST7789_DC_GPIO_Port, ST7789_DC_Pin, level);
+}
+
+ST7789_Descriptor_st displayDescriptor = {
+    .spiTransmit = SPI_Transmit_ST7789,
+    .spiChipSelect = SPI_ChipSelect_ST7789,
+    .selectDataCommand = SelectDataCommand_ST7789,
+    .width = 240,
+    .height = 280,
+};
+
+ST7789_st display = {0};
+//-----ST7789-----
+
+
+
+//-----MicroGFX-----
+MicroGFX_st gfxDisplay = {0};
+
+void MicroGFX_SetPixel_Display(MicroGFX_st* gfx, uint16_t x, uint16_t y, uint16_t color){
+	if(gfx == &gfxDisplay){
+		ST7789_SetPixel(&display, x, y, color);
+	}
+}
+
+void MicroGFX_SetPixelArray_Display(MicroGFX_st* gfx, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t* color, uint8_t singleFlag){
+	if(gfx == &gfxDisplay){
+		ST7789_SetPixelArray(&display, x, y, w, h, color, singleFlag);
+	}
+}
+
+MicroGFX_Descriptor_st gfxDisplayDescriptor = {
+		.setPixel = MicroGFX_SetPixel_Display,
+		.setPixelArray = MicroGFX_SetPixelArray_Display,
+		.height = 280,
+		.width = 240
+};
+//-----MicroGFX-----
+
 
 
 
@@ -166,6 +220,13 @@ int main(void)
   MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
   RC522_Init(&rc522, &RC522Descriptor);
+
+  ST7789_Init(&display, &displayDescriptor);
+  ST7789_SetOffsetY(&display, 20);
+  ST7789_FillScreen(&display, RGB565(0, 0, 0));
+
+  MicroGFX_Init(&gfxDisplay, &gfxDisplayDescriptor);
+  MicroGFX_DrawChar(&gfxDisplay, 40, 40, 'A', RGB565(255, 255, 255), MicroGFX_GetFontByType(&gfxDisplay, FONT_11X18));
   /* USER CODE END 2 */
 
   /* Init scheduler */
