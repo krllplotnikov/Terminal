@@ -57,6 +57,32 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define LED_Pin GPIO_PIN_13
+#define LED_GPIO_Port GPIOC
+#define RC522_RST_Pin GPIO_PIN_3
+#define RC522_RST_GPIO_Port GPIOA
+#define RC522_CS_Pin GPIO_PIN_4
+#define RC522_CS_GPIO_Port GPIOA
+#define BUZZER_Pin GPIO_PIN_0
+#define BUZZER_GPIO_Port GPIOB
+#define ST7789_DC_Pin GPIO_PIN_11
+#define ST7789_DC_GPIO_Port GPIOB
+#define ST7789_CS_Pin GPIO_PIN_12
+#define ST7789_CS_GPIO_Port GPIOB
+#define KEYBOARD_COL_1_Pin GPIO_PIN_3
+#define KEYBOARD_COL_1_GPIO_Port GPIOB
+#define KEYBOARD_COL_2_Pin GPIO_PIN_4
+#define KEYBOARD_COL_2_GPIO_Port GPIOB
+#define KEYBOARD_COL_3_Pin GPIO_PIN_5
+#define KEYBOARD_COL_3_GPIO_Port GPIOB
+#define KEYBOARD_ROW_1_Pin GPIO_PIN_6
+#define KEYBOARD_ROW_1_GPIO_Port GPIOB
+#define KEYBOARD_ROW_2_Pin GPIO_PIN_7
+#define KEYBOARD_ROW_2_GPIO_Port GPIOB
+#define KEYBOARD_ROW_3_Pin GPIO_PIN_8
+#define KEYBOARD_ROW_3_GPIO_Port GPIOB
+#define KEYBOARD_ROW_4_Pin GPIO_PIN_9
+#define KEYBOARD_ROW_4_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 
