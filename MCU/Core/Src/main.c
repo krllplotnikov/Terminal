@@ -102,17 +102,7 @@ void Reset_RC522(RC522_st* rc522, uint8_t level){
 	HAL_GPIO_WritePin(RC522_RST_GPIO_Port, RC522_RST_Pin, level);
 }
 
-void CardEvent_Callback_RC522(RC522_st* rc522, RC522_CardEvent_et event){
-	if(event == RC522_CARD_DETECTED){
-		if (RC522_ReadUid(rc522, uid) == RC522_STATUS_OK){
-		  USER_LOG("CARD ID:%02X %02X %02X %02X", uid[0], uid[1], uid[2], uid[3]);
-		}
-		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
-	}
-	else if(event == RC522_CARD_REMOVED){
-		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
-	}
-}
+void CardEvent_Callback_RC522(RC522_st* rc522, RC522_CardEvent_et event);
 
 RC522_Descriptor_st RC522Descriptor = {
 		.getTick = HAL_GetTick,
@@ -175,6 +165,24 @@ MicroGFX_Descriptor_st gfxDisplayDescriptor = {
 };
 //-----MicroGFX-----
 
+
+
+
+void CardEvent_Callback_RC522(RC522_st* rc522, RC522_CardEvent_et event){
+	if(event == RC522_CARD_DETECTED){
+		if (RC522_ReadUid(rc522, uid) == RC522_STATUS_OK){
+		  USER_LOG("CARD ID:%02X %02X %02X %02X", uid[0], uid[1], uid[2], uid[3]);
+		  char str[64] = {0};
+		  sprintf(str, "Card ID: %02X %02X %02X %02X", uid[0], uid[1], uid[2], uid[3]);
+		  MicroGFX_DrawString(&gfxDisplay, 10, 10, str, RGB565(255, 255, 255), FONT_11X18);
+		}
+		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
+	}
+	else if(event == RC522_CARD_REMOVED){
+		MicroGFX_DrawString(&gfxDisplay, 10, 10, "Waiting card...      ", RGB565(255, 255, 255), FONT_11X18);
+		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
+	}
+}
 
 
 
