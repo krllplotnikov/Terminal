@@ -13,12 +13,12 @@
 [submodule "MCU/Core/Libraries/RC522"]
 	path = MCU/Core/Libraries/RC522
 	url = https://github.com/krllplotnikov-libraries/RC522.git
-[submodule "MCU/Core/Libraries/Keyboard3x4"]
-	path = MCU/Core/Libraries/Keyboard3x4
-	url = https://github.com/krllplotnikov-libraries/Keyboard3x4.git
 [submodule "MCU/Core/Libraries/Logger"]
 	path = MCU/Core/Libraries/Logger
 	url = https://github.com/krllplotnikov-libraries/Logger.git
 [submodule "MCU/Core/Libraries/W25Q"]
 	path = MCU/Core/Libraries/W25Q
 	url = https://github.com/krllplotnikov-libraries/W25Q.git
+[submodule "MCU/Core/Libraries/MatrixKeyboard"]
+	path = MCU/Core/Libraries/MatrixKeyboard
+	url = https://github.com/krllplotnikov-libraries/MatrixKeyboard.git
