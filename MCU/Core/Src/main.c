@@ -25,7 +25,7 @@
 #include "RC522.h"
 #include "ST7789.h"
 #include "MicroGFX.h"
-#include "Keyboard3x4.h"
+#include "MatrixKeyboard.h"
 #include "LED.h"
 /* USER CODE END Includes */
 
@@ -170,9 +170,9 @@ MicroGFX_Descriptor_st gfxDisplayDescriptor = {
 
 
 //-----Keyboard-----
-static Keyboard3x4_st key = {0};
+static MatrixKeyboard_st key = {0};
 
-static void SetRowStateKeyboard3x4(Keyboard3x4_st* keyboard, uint8_t row, uint8_t state){
+static void MatrixKeyboardSetRowState3x4(MatrixKeyboard_st* keyboard, uint8_t row, uint8_t state){
 	if(row == 0)
 		HAL_GPIO_WritePin(KEYBOARD_ROW_1_GPIO_Port, KEYBOARD_ROW_1_Pin, state);
 	else if(row == 1)
@@ -183,7 +183,7 @@ static void SetRowStateKeyboard3x4(Keyboard3x4_st* keyboard, uint8_t row, uint8_
 		HAL_GPIO_WritePin(KEYBOARD_ROW_4_GPIO_Port, KEYBOARD_ROW_4_Pin, state);
 }
 
-static uint8_t GetColStateKeyboard3x4(Keyboard3x4_st* keyboard, uint8_t col){
+static uint8_t MatrixKeyboardGetColState3x4(MatrixKeyboard_st* keyboard, uint8_t col){
 	if(col == 0)
 		return HAL_GPIO_ReadPin(KEYBOARD_COL_1_GPIO_Port, KEYBOARD_COL_1_Pin);
 	else if(col == 1)
@@ -194,12 +194,14 @@ static uint8_t GetColStateKeyboard3x4(Keyboard3x4_st* keyboard, uint8_t col){
 	return 0;
 }
 
-static void EventCallbackKeyboard3x4(Keyboard3x4_st* keyboard, Keyboard3x4Event_et event, uint8_t button);
+static void MatrixKeyboardEventCallback3x4(MatrixKeyboard_st* keyboard, MatrixKeyboardEvent_et event, uint8_t button);
 
-static Keyboard3x4UserFunctions_st keyUserFunctions = {
-		.getColState = GetColStateKeyboard3x4,
-		.setRowState = SetRowStateKeyboard3x4,
-		.eventCallback = EventCallbackKeyboard3x4
+static MatrixKeyboardDescriptor_st keyUserFunctions = {
+		.getColState = MatrixKeyboardGetColState3x4,
+		.setRowState = MatrixKeyboardSetRowState3x4,
+		.eventCallback = MatrixKeyboardEventCallback3x4,
+		.rows = 4,
+		.cols = 3
 };
 //-----Keyboard-----
 
@@ -225,8 +227,8 @@ static LedUserFunctions_st ledUserFunctions = {
 //-----LED-----
 
 uint8_t cursor = 0;
-void EventCallbackKeyboard3x4(Keyboard3x4_st* keyboard, Keyboard3x4Event_et event, uint8_t button){
-	if(event == KEYBOARD3x4_EVENT_PRESS){
+void MatrixKeyboardEventCallback3x4(MatrixKeyboard_st* keyboard, MatrixKeyboardEvent_et event, uint8_t button){
+	if(event == MATRIX_KEYBOARD_EVENT_PRESS){
 		USER_LOG("Keyboard PRESS: %d", button);
 
 		MicroGFX_DrawChar(&gfxDisplay, cursor, 0, button + 48, RGB565(255, 255, 255), FONT_11X18);
@@ -301,6 +303,10 @@ int main(void)
   /* USER CODE BEGIN 2 */
   RC522_Init(&rc522, &RC522Descriptor);
 
+  HAL_GPIO_WritePin(ST7789_RES_GPIO_Port, ST7789_RES_Pin, GPIO_PIN_RESET);
+  HAL_Delay(20);
+  HAL_GPIO_WritePin(ST7789_RES_GPIO_Port, ST7789_RES_Pin, GPIO_PIN_SET);
+
   ST7789_Init(&display, &displayDescriptor);
   ST7789_SetOffsetY(&display, 20);
   ST7789_FillScreen(&display, RGB565(0, 0, 0));
@@ -308,7 +314,7 @@ int main(void)
   MicroGFX_Init(&gfxDisplay, &gfxDisplayDescriptor);
   MicroGFX_DrawChar(&gfxDisplay, 40, 40, 'A', RGB565(255, 255, 255), FONT_11X18);
 
-  Keyboard3x4_Init(&key, &keyUserFunctions);
+  MatrixKeyboard_Init(&key, &keyUserFunctions);
 
   LED_Init(&ledB, &ledUserFunctions);
   /* USER CODE END 2 */
@@ -530,10 +536,10 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, RC522_RST_Pin|RC522_CS_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, ST7789_CS_Pin|ST7789_RES_Pin|ST7789_DC_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, BUZZER_Pin|ST7789_DC_Pin|ST7789_CS_Pin|KEYBOARD_ROW_1_Pin
+  HAL_GPIO_WritePin(GPIOB, BUZZER_Pin|RC522_RST_Pin|RC522_CS_Pin|KEYBOARD_ROW_1_Pin
                           |KEYBOARD_ROW_2_Pin|KEYBOARD_ROW_3_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : LED_Pin */
@@ -543,16 +549,16 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : RC522_RST_Pin RC522_CS_Pin */
-  GPIO_InitStruct.Pin = RC522_RST_Pin|RC522_CS_Pin;
+  /*Configure GPIO pins : ST7789_CS_Pin ST7789_RES_Pin ST7789_DC_Pin */
+  GPIO_InitStruct.Pin = ST7789_CS_Pin|ST7789_RES_Pin|ST7789_DC_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : BUZZER_Pin ST7789_DC_Pin ST7789_CS_Pin KEYBOARD_ROW_1_Pin
+  /*Configure GPIO pins : BUZZER_Pin RC522_RST_Pin RC522_CS_Pin KEYBOARD_ROW_1_Pin
                            KEYBOARD_ROW_2_Pin KEYBOARD_ROW_3_Pin */
-  GPIO_InitStruct.Pin = BUZZER_Pin|ST7789_DC_Pin|ST7789_CS_Pin|KEYBOARD_ROW_1_Pin
+  GPIO_InitStruct.Pin = BUZZER_Pin|RC522_RST_Pin|RC522_CS_Pin|KEYBOARD_ROW_1_Pin
                           |KEYBOARD_ROW_2_Pin|KEYBOARD_ROW_3_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
@@ -594,7 +600,7 @@ void StartDefaultTask(void *argument)
   for(;;)
   {
 	  RC522_Run(&rc522);
-	  Keyboard3x4_Run(&key);
+	  MatrixKeyboard_Run(&key);
 	  LED_Run(&ledB);
     osDelay(1);
   }
