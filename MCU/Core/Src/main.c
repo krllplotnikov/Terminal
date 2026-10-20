@@ -25,6 +25,7 @@
 #include "RC522.h"
 #include "ST7789.h"
 #include "MicroGFX.h"
+#include "Keyboard3x4.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -89,6 +90,8 @@ void StartDefaultTask(void *argument);
 uint8_t uid[4];
 
 //-----RC522-----
+RC522_st rc522 = {0};
+
 void SPI_Transmit_RC522(RC522_st* rc522, uint8_t* txBuf, size_t size){
 	HAL_SPI_Transmit(&hspi1, txBuf, size, 5000);
 }
@@ -112,13 +115,13 @@ RC522_Descriptor_st RC522Descriptor = {
 		.reset = Reset_RC522,
 		.eventCallback = CardEvent_Callback_RC522,
 };
-
-RC522_st rc522 = {0};
 //-----RC522-----
 
 
 
 //-----ST7789-----
+ST7789_st display = {0};
+
 void SPI_Transmit_ST7789(ST7789_st* st7789, uint8_t* data, size_t size){
   HAL_SPI_Transmit(&hspi1, data, size, 5000);
 }
@@ -136,8 +139,6 @@ ST7789_Descriptor_st displayDescriptor = {
     .width = 240,
     .height = 280,
 };
-
-ST7789_st display = {0};
 //-----ST7789-----
 
 
@@ -167,6 +168,48 @@ MicroGFX_Descriptor_st gfxDisplayDescriptor = {
 
 
 
+//-----Keyboard-----
+static Keyboard3x4_st key = {0};
+
+static void SetRowStateKeyboard3x4(Keyboard3x4_st* keyboard, uint8_t row, uint8_t state){
+	if(row == 0)
+		HAL_GPIO_WritePin(KEYBOARD_ROW_1_GPIO_Port, KEYBOARD_ROW_1_Pin, state);
+	else if(row == 1)
+		HAL_GPIO_WritePin(KEYBOARD_ROW_2_GPIO_Port, KEYBOARD_ROW_2_Pin, state);
+	else if(row == 2)
+		HAL_GPIO_WritePin(KEYBOARD_ROW_3_GPIO_Port, KEYBOARD_ROW_3_Pin, state);
+	else if(row == 3)
+		HAL_GPIO_WritePin(KEYBOARD_ROW_4_GPIO_Port, KEYBOARD_ROW_4_Pin, state);
+}
+
+static uint8_t GetColStateKeyboard3x4(Keyboard3x4_st* keyboard, uint8_t col){
+	if(col == 0)
+		return HAL_GPIO_ReadPin(KEYBOARD_COL_1_GPIO_Port, KEYBOARD_COL_1_Pin);
+	else if(col == 1)
+		return HAL_GPIO_ReadPin(KEYBOARD_COL_2_GPIO_Port, KEYBOARD_COL_2_Pin);
+	else if(col == 2)
+		return HAL_GPIO_ReadPin(KEYBOARD_COL_3_GPIO_Port, KEYBOARD_COL_3_Pin);
+
+	return 0;
+}
+
+static void EventCallbackKeyboard3x4(Keyboard3x4_st* keyboard, Keyboard3x4Event_et event, uint8_t button);
+
+static Keyboard3x4UserFunctions_st keyUserFunctions = {
+		.getColState = GetColStateKeyboard3x4,
+		.setRowState = SetRowStateKeyboard3x4,
+		.eventCallback = EventCallbackKeyboard3x4
+};
+//-----Keyboard-----
+
+
+uint8_t cursor = 0;
+void EventCallbackKeyboard3x4(Keyboard3x4_st* keyboard, Keyboard3x4Event_et event, uint8_t button){
+	if(event == KEYBOARD3x4_EVENT_PRESS){
+		MicroGFX_DrawChar(&gfxDisplay, cursor, 0, button + 48, RGB565(255, 255, 255), FONT_11X18);
+		cursor += 11;
+	}
+}
 
 void CardEvent_Callback_RC522(RC522_st* rc522, RC522_CardEvent_et event){
 	if(event == RC522_CARD_DETECTED){
@@ -235,6 +278,8 @@ int main(void)
 
   MicroGFX_Init(&gfxDisplay, &gfxDisplayDescriptor);
   MicroGFX_DrawChar(&gfxDisplay, 40, 40, 'A', RGB565(255, 255, 255), FONT_11X18);
+
+  Keyboard3x4_Init(&key, &keyUserFunctions);
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -518,6 +563,7 @@ void StartDefaultTask(void *argument)
   for(;;)
   {
 	  RC522_Run(&rc522);
+	  Keyboard3x4_Run(&key);
     osDelay(1);
   }
   /* USER CODE END 5 */
