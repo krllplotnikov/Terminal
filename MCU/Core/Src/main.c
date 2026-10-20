@@ -26,6 +26,7 @@
 #include "ST7789.h"
 #include "MicroGFX.h"
 #include "Keyboard3x4.h"
+#include "LED.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -203,6 +204,26 @@ static Keyboard3x4UserFunctions_st keyUserFunctions = {
 //-----Keyboard-----
 
 
+
+//-----LED-----
+static LED_st ledB = {0};
+
+static void SetState_Led(LED_st* led, LedState_et state){
+	if(led == &ledB){
+		if(state == LED_STATE_ON) HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_RESET);
+		else                      HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_SET);
+	}
+}
+
+static void IndicationIsOverCallbackLed(LED_st* led, LedIndications_et indication, uint8_t repeatCounter);
+
+static LedUserFunctions_st ledUserFunctions = {
+		.setState = SetState_Led,
+		.getTick = HAL_GetTick,
+		.indicationIsOverCallback = IndicationIsOverCallbackLed
+};
+//-----LED-----
+
 uint8_t cursor = 0;
 void EventCallbackKeyboard3x4(Keyboard3x4_st* keyboard, Keyboard3x4Event_et event, uint8_t button){
 	if(event == KEYBOARD3x4_EVENT_PRESS){
@@ -225,6 +246,10 @@ void CardEvent_Callback_RC522(RC522_st* rc522, RC522_CardEvent_et event){
 		MicroGFX_DrawString(&gfxDisplay, 10, 10, "Waiting card...      ", RGB565(255, 255, 255), FONT_11X18);
 		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
 	}
+}
+
+static void IndicationIsOverCallbackLed(LED_st* led, LedIndications_et indication, uint8_t repeatCounter){
+
 }
 
 
@@ -280,6 +305,8 @@ int main(void)
   MicroGFX_DrawChar(&gfxDisplay, 40, 40, 'A', RGB565(255, 255, 255), FONT_11X18);
 
   Keyboard3x4_Init(&key, &keyUserFunctions);
+
+  LED_Init(&ledB, &ledUserFunctions);
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -564,6 +591,7 @@ void StartDefaultTask(void *argument)
   {
 	  RC522_Run(&rc522);
 	  Keyboard3x4_Run(&key);
+	  LED_Run(&ledB);
     osDelay(1);
   }
   /* USER CODE END 5 */
