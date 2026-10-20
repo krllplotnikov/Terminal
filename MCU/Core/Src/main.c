@@ -227,6 +227,8 @@ static LedUserFunctions_st ledUserFunctions = {
 uint8_t cursor = 0;
 void EventCallbackKeyboard3x4(Keyboard3x4_st* keyboard, Keyboard3x4Event_et event, uint8_t button){
 	if(event == KEYBOARD3x4_EVENT_PRESS){
+		USER_LOG("Keyboard PRESS: %d", button);
+
 		MicroGFX_DrawChar(&gfxDisplay, cursor, 0, button + 48, RGB565(255, 255, 255), FONT_11X18);
 		cursor += 11;
 	}
@@ -234,6 +236,7 @@ void EventCallbackKeyboard3x4(Keyboard3x4_st* keyboard, Keyboard3x4Event_et even
 
 void CardEvent_Callback_RC522(RC522_st* rc522, RC522_CardEvent_et event){
 	if(event == RC522_CARD_DETECTED){
+		USER_LOG("CARD DETECTED");
 		if (RC522_ReadUid(rc522, uid) == RC522_STATUS_OK){
 		  USER_LOG("CARD ID:%02X %02X %02X %02X", uid[0], uid[1], uid[2], uid[3]);
 		  char str[64] = {0};
@@ -243,6 +246,7 @@ void CardEvent_Callback_RC522(RC522_st* rc522, RC522_CardEvent_et event){
 		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
 	}
 	else if(event == RC522_CARD_REMOVED){
+		USER_LOG("CARD REMOVED");
 		MicroGFX_DrawString(&gfxDisplay, 10, 10, "Waiting card...      ", RGB565(255, 255, 255), FONT_11X18);
 		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
 	}
