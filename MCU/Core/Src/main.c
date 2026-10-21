@@ -89,6 +89,7 @@ void StartDefaultTask(void *argument);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 uint8_t uid[4];
+uint8_t uidSize;
 
 //-----RC522-----
 RC522_st rc522 = {0};
@@ -239,7 +240,7 @@ void MatrixKeyboardEventCallback3x4(MatrixKeyboard_st* keyboard, MatrixKeyboardE
 void CardEvent_Callback_RC522(RC522_st* rc522, RC522_CardEvent_et event){
 	if(event == RC522_CARD_DETECTED){
 		USER_LOG("CARD DETECTED");
-		if (RC522_ReadUid(rc522, uid) == RC522_STATUS_OK){
+		if (RC522_ReadUid(rc522, uid, &uidSize) == RC522_STATUS_OK){
 		  USER_LOG("CARD ID:%02X %02X %02X %02X", uid[0], uid[1], uid[2], uid[3]);
 		  char str[64] = {0};
 		  sprintf(str, "Card ID: %02X %02X %02X %02X", uid[0], uid[1], uid[2], uid[3]);
