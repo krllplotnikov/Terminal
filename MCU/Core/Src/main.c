@@ -102,9 +102,6 @@ void SPI_Receive_RC522(RC522_st* rc522, uint8_t* rxBuf, size_t size){
 void SPI_ChipSelect_RC522(RC522_st* rc522, uint8_t level){
 	HAL_GPIO_WritePin(RC522_CS_GPIO_Port, RC522_CS_Pin, level);
 }
-void Reset_RC522(RC522_st* rc522, uint8_t level){
-	HAL_GPIO_WritePin(RC522_RST_GPIO_Port, RC522_RST_Pin, level);
-}
 
 void CardEvent_Callback_RC522(RC522_st* rc522, RC522_CardEvent_et event);
 
@@ -113,7 +110,6 @@ RC522_Descriptor_st RC522Descriptor = {
 		.spiChipSelect = SPI_ChipSelect_RC522,
 		.spiTransmit = SPI_Transmit_RC522,
 		.spiReceive = SPI_Receive_RC522,
-		.reset = Reset_RC522,
 		.eventCallback = CardEvent_Callback_RC522,
 };
 //-----RC522-----
@@ -231,7 +227,7 @@ void MatrixKeyboardEventCallback3x4(MatrixKeyboard_st* keyboard, MatrixKeyboardE
 	if(event == MATRIX_KEYBOARD_EVENT_PRESS){
 		USER_LOG("Keyboard PRESS: %d", button);
 
-		MicroGFX_DrawChar(&gfxDisplay, cursor, 0, button + 48, RGB565(255, 255, 255), FONT_11X18);
+		MicroGFX_DrawChar(&gfxDisplay, cursor, 0, button + 48 + 1, RGB565(255, 255, 255), FONT_11X18);
 		cursor += 11;
 	}
 }
@@ -301,20 +297,34 @@ int main(void)
   MX_USART1_UART_Init();
   MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
+  HAL_GPIO_WritePin(RC522_RST_GPIO_Port, RC522_RST_Pin, 0);
+  HAL_Delay(50);
+  HAL_GPIO_WritePin(RC522_RST_GPIO_Port, RC522_RST_Pin, 1);
+  HAL_Delay(50);
+
   RC522_Init(&rc522, &RC522Descriptor);
+
+
 
   HAL_GPIO_WritePin(ST7789_RES_GPIO_Port, ST7789_RES_Pin, GPIO_PIN_RESET);
   HAL_Delay(20);
   HAL_GPIO_WritePin(ST7789_RES_GPIO_Port, ST7789_RES_Pin, GPIO_PIN_SET);
 
+
+
   ST7789_Init(&display, &displayDescriptor);
   ST7789_SetOffsetY(&display, 20);
+  ST7789_SetRotation(&display, ST7789_ROTATION_VERTICAL_180);
   ST7789_FillScreen(&display, RGB565(0, 0, 0));
 
   MicroGFX_Init(&gfxDisplay, &gfxDisplayDescriptor);
   MicroGFX_DrawChar(&gfxDisplay, 40, 40, 'A', RGB565(255, 255, 255), FONT_11X18);
 
+
+
   MatrixKeyboard_Init(&key, &keyUserFunctions);
+
+
 
   LED_Init(&ledB, &ledUserFunctions);
   /* USER CODE END 2 */
@@ -556,10 +566,17 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : BUZZER_Pin RC522_RST_Pin RC522_CS_Pin KEYBOARD_ROW_1_Pin
-                           KEYBOARD_ROW_2_Pin KEYBOARD_ROW_3_Pin */
-  GPIO_InitStruct.Pin = BUZZER_Pin|RC522_RST_Pin|RC522_CS_Pin|KEYBOARD_ROW_1_Pin
-                          |KEYBOARD_ROW_2_Pin|KEYBOARD_ROW_3_Pin;
+  /*Configure GPIO pin : BUZZER_Pin */
+  GPIO_InitStruct.Pin = BUZZER_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(BUZZER_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : RC522_RST_Pin RC522_CS_Pin KEYBOARD_ROW_1_Pin KEYBOARD_ROW_2_Pin
+                           KEYBOARD_ROW_3_Pin */
+  GPIO_InitStruct.Pin = RC522_RST_Pin|RC522_CS_Pin|KEYBOARD_ROW_1_Pin|KEYBOARD_ROW_2_Pin
+                          |KEYBOARD_ROW_3_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -568,7 +585,7 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pins : KEYBOARD_COL_1_Pin KEYBOARD_COL_2_Pin KEYBOARD_COL_3_Pin */
   GPIO_InitStruct.Pin = KEYBOARD_COL_1_Pin|KEYBOARD_COL_2_Pin|KEYBOARD_COL_3_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pin : KEYBOARD_ROW_4_Pin */
@@ -599,7 +616,7 @@ void StartDefaultTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
-	  RC522_Run(&rc522);
+	  //RC522_Run(&rc522);
 	  MatrixKeyboard_Run(&key);
 	  LED_Run(&ledB);
     osDelay(1);
