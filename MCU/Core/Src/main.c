@@ -72,9 +72,7 @@ typedef struct{
 uint8_t currentScreen = START;
 uint8_t currentPlayer = 0;
 uint8_t cursor = 0;
-uint16_t startSumInt = 0;
 char startSumStr[16] = "";
-uint16_t enterSumInt = 0;
 char enterSumStr[16] = "";
 Player_st players[4] = {0};
 /* USER CODE END PTD */
@@ -293,7 +291,7 @@ void MatrixKeyboardEventCallback3x4(MatrixKeyboard_st* keyboard, MatrixKeyboardE
 			if(button >= 0 && button <= 9){
 				startSumStr[cursor] = button + 1;
 
-				MicroGFX_DrawChar(&gfxDisplay, 5 + cursor * 11, 18, startSumStr[cursor], BLACK_RGB565, FONT_11X18);
+				MicroGFX_DrawChar(&gfxDisplay, 5 + cursor * 11, 28, startSumStr[cursor], BLACK_RGB565, FONT_11X18);
 
 				cursor++;
 			}
@@ -304,6 +302,7 @@ void MatrixKeyboardEventCallback3x4(MatrixKeyboard_st* keyboard, MatrixKeyboardE
 				for(uint8_t i = 0; i < 4; i++){
 					players[i].balance = atoi(startSumStr);
 				}
+				memset(startSumStr, 0, 16);
 
 				MicroGFX_FillScreen(&gfxDisplay, WHITE_RGB565);
 				MicroGFX_DrawString(&gfxDisplay, 15, 10, WAIT_CARD_RU_STR, BLACK_RGB565, FONT_11X18);
@@ -323,6 +322,8 @@ void MatrixKeyboardEventCallback3x4(MatrixKeyboard_st* keyboard, MatrixKeyboardE
 
 			if(button == 1){
 				currentScreen = ENTER_SUM;
+				MicroGFX_FillScreen(&gfxDisplay, WHITE_RGB565);
+				MicroGFX_DrawString(&gfxDisplay, 15, 10, ENTER_SUM_RU_STR, BLACK_RGB565, FONT_11X18);
 			}
 		}
 
@@ -342,7 +343,7 @@ void MatrixKeyboardEventCallback3x4(MatrixKeyboard_st* keyboard, MatrixKeyboardE
 			if(button >= 0 && button <= 9){
 				enterSumStr[cursor] = button + 1;
 
-				MicroGFX_DrawChar(&gfxDisplay, 5 + cursor * 11, 18, enterSumStr[cursor], BLACK_RGB565, FONT_11X18);
+				MicroGFX_DrawChar(&gfxDisplay, 5 + cursor * 11, 28, enterSumStr[cursor], BLACK_RGB565, FONT_11X18);
 
 				cursor++;
 			}
@@ -350,8 +351,6 @@ void MatrixKeyboardEventCallback3x4(MatrixKeyboard_st* keyboard, MatrixKeyboardE
 			if(button == 11){
 				cursor = 0;
 				currentScreen = CHOOSE_PL;
-
-				enterSumInt = atoi(enterSumStr);
 
 				MicroGFX_FillScreen(&gfxDisplay, WHITE_RGB565);
 				MicroGFX_DrawString(&gfxDisplay, 15, 10, CHOOSE_PLAYER_RU_STR, BLACK_RGB565, FONT_11X18);
@@ -364,12 +363,13 @@ void MatrixKeyboardEventCallback3x4(MatrixKeyboard_st* keyboard, MatrixKeyboardE
 			if(button >= 0 && button <= 1){
 				currentScreen = WAIT_CARD;
 
-				players[currentPlayer].balance -= enterSumInt;
-				players[button].balance += enterSumInt;
-				enterSumStr[cursor] = button + 1;
+				players[currentPlayer].balance -= atoi(enterSumStr);
+				players[button].balance += atoi(enterSumStr);
 
 				MicroGFX_FillScreen(&gfxDisplay, WHITE_RGB565);
 				MicroGFX_DrawString(&gfxDisplay, 15, 10, WAIT_CARD_RU_STR, BLACK_RGB565, FONT_11X18);
+
+				memset(enterSumStr, 0, 16);
 			}
 		}
 	}
@@ -384,14 +384,18 @@ void CardEvent_Callback_RC522(RC522_st* rc522, RC522_CardEvent_et event){
 
 
 		  if(currentScreen == REG_CARD_1){
-			  for(uint8_t i = 0; i < 4; i++)
-			  if(players[i].cardNum[0] == 0){
-				  char str[64] = {0};
-				  sprintf(str, "%d. Карта Игрока №%d: %02X %02X %02X %02X", i, i, uid[0], uid[1], uid[2], uid[3]);
-				  MicroGFX_DrawString(&gfxDisplay, 5, 18 + i * 18, str, BLACK_RGB565, FONT_11X18);
+			  for(uint8_t i = 0; i < 4; i++){
+				  if(!memcmp(players[i].cardNum, uid, 4)){
+					  break;
+				  }
+				  if(players[i].cardNum[0] == 0){
+					  char str[64] = {0};
+					  sprintf(str, "%d. Карта Игрока №%d: %02X %02X %02X %02X", i, i, uid[0], uid[1], uid[2], uid[3]);
+					  MicroGFX_DrawString(&gfxDisplay, 5, 28 + i * 18, str, BLACK_RGB565, FONT_11X18);
 
-				  memcpy(players[i].cardNum, uid, 4);
-				  players[i].id = i;
+					  memcpy(players[i].cardNum, uid, 4);
+					  players[i].id = i;
+				  }
 			  }
 		  }
 
@@ -399,7 +403,7 @@ void CardEvent_Callback_RC522(RC522_st* rc522, RC522_CardEvent_et event){
 			  currentScreen = CHOOSE_OP;
 
 			  for(uint8_t i = 0; i < 4; i++){
-				  if(memcmp(players[i].cardNum, uid, 4)){
+				  if(!memcmp(players[i].cardNum, uid, 4)){
 					  currentPlayer = i;
 					  break;
 				  }
