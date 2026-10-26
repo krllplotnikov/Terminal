@@ -169,23 +169,30 @@ MicroGFX_Descriptor_st gfxDisplayDescriptor = {
 static MatrixKeyboard_st key = {0};
 
 static void MatrixKeyboardSetRowState3x4(MatrixKeyboard_st* keyboard, uint8_t row, uint8_t state){
-	if(row == 0)
+	if(row == 0){
 		HAL_GPIO_WritePin(KEYBOARD_ROW_1_GPIO_Port, KEYBOARD_ROW_1_Pin, state);
-	else if(row == 1)
+	}
+	else if(row == 1){
 		HAL_GPIO_WritePin(KEYBOARD_ROW_2_GPIO_Port, KEYBOARD_ROW_2_Pin, state);
-	else if(row == 2)
+	}
+	else if(row == 2){
 		HAL_GPIO_WritePin(KEYBOARD_ROW_3_GPIO_Port, KEYBOARD_ROW_3_Pin, state);
-	else if(row == 3)
+	}
+	else if(row == 3){
 		HAL_GPIO_WritePin(KEYBOARD_ROW_4_GPIO_Port, KEYBOARD_ROW_4_Pin, state);
+	}
 }
 
 static uint8_t MatrixKeyboardGetColState3x4(MatrixKeyboard_st* keyboard, uint8_t col){
-	if(col == 0)
+	if(col == 0){
 		return HAL_GPIO_ReadPin(KEYBOARD_COL_1_GPIO_Port, KEYBOARD_COL_1_Pin);
-	else if(col == 1)
+	}
+	else if(col == 1){
 		return HAL_GPIO_ReadPin(KEYBOARD_COL_2_GPIO_Port, KEYBOARD_COL_2_Pin);
-	else if(col == 2)
+	}
+	else if(col == 2){
 		return HAL_GPIO_ReadPin(KEYBOARD_COL_3_GPIO_Port, KEYBOARD_COL_3_Pin);
+	}
 
 	return 0;
 }
@@ -204,21 +211,21 @@ static MatrixKeyboardDescriptor_st keyUserFunctions = {
 
 
 //-----LED-----
-static LED_st ledB = {0};
+static LED_st buzzer = {0};
 
-static void SetState_Led(LED_st* led, LedState_et state){
-	if(led == &ledB){
+static void SetState_Buzzer(LED_st* led, LedState_et state){
+	if(led == &buzzer){
 		if(state == LED_STATE_ON) HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_RESET);
 		else                      HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_SET);
 	}
 }
 
-static void IndicationIsOverCallbackLed(LED_st* led, LedIndications_et indication, uint8_t repeatCounter);
+static void IndicationIsOverCallbackBuzzer(LED_st* led, LedIndications_et indication, uint8_t repeatCounter);
 
-static LedUserFunctions_st ledUserFunctions = {
-		.setState = SetState_Led,
+static LedUserFunctions_st buzzerUserFunctions = {
+		.setState = SetState_Buzzer,
 		.getTick = HAL_GetTick,
-		.indicationIsOverCallback = IndicationIsOverCallbackLed
+		.indicationIsOverCallback = IndicationIsOverCallbackBuzzer
 };
 //-----LED-----
 
@@ -227,30 +234,38 @@ void MatrixKeyboardEventCallback3x4(MatrixKeyboard_st* keyboard, MatrixKeyboardE
 	if(event == MATRIX_KEYBOARD_EVENT_PRESS){
 		USER_LOG("Keyboard PRESS: %d", button);
 
-		MicroGFX_DrawChar(&gfxDisplay, cursor, 0, button + 48 + 1, RGB565(255, 255, 255), FONT_11X18);
+		MicroGFX_DrawChar(&gfxDisplay, cursor, 0, button + 48 + 1, BLACK_RGB565, FONT_11X18);
 		cursor += 11;
+
+		LED_SetIndication(&buzzer, LED_INDICATION_SINGLE_BLINK, 1);
 	}
 }
 
 void CardEvent_Callback_RC522(RC522_st* rc522, RC522_CardEvent_et event){
 	if(event == RC522_CARD_DETECTED){
+
 		USER_LOG("CARD DETECTED");
+
 		if (RC522_ReadUid(rc522, uid) == RC522_STATUS_OK){
+
 		  USER_LOG("CARD ID:%02X %02X %02X %02X", uid[0], uid[1], uid[2], uid[3]);
 		  char str[64] = {0};
 		  sprintf(str, "Card ID: %02X %02X %02X %02X", uid[0], uid[1], uid[2], uid[3]);
-		  MicroGFX_DrawString(&gfxDisplay, 10, 10, str, RGB565(255, 255, 255), FONT_11X18);
+
+		  MicroGFX_DrawString(&gfxDisplay, 10, 10, str, BLACK_RGB565, FONT_11X18);
 		}
 		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
 	}
 	else if(event == RC522_CARD_REMOVED){
+
 		USER_LOG("CARD REMOVED");
-		MicroGFX_DrawString(&gfxDisplay, 10, 10, "Waiting card...      ", RGB565(255, 255, 255), FONT_11X18);
+
+		MicroGFX_DrawString(&gfxDisplay, 10, 10, "Waiting card...      ", BLACK_RGB565, FONT_11X18);
 		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
 	}
 }
 
-static void IndicationIsOverCallbackLed(LED_st* led, LedIndications_et indication, uint8_t repeatCounter){
+static void IndicationIsOverCallbackBuzzer(LED_st* led, LedIndications_et indication, uint8_t repeatCounter){
 
 }
 
@@ -302,31 +317,22 @@ int main(void)
   HAL_GPIO_WritePin(RC522_RST_GPIO_Port, RC522_RST_Pin, 1);
   HAL_Delay(50);
 
-  RC522_Init(&rc522, &RC522Descriptor);
-
-
-
   HAL_GPIO_WritePin(ST7789_RES_GPIO_Port, ST7789_RES_Pin, GPIO_PIN_RESET);
   HAL_Delay(20);
   HAL_GPIO_WritePin(ST7789_RES_GPIO_Port, ST7789_RES_Pin, GPIO_PIN_SET);
+  HAL_Delay(20);
 
-
+  MatrixKeyboard_Init(&key, &keyUserFunctions);
+  LED_Init(&buzzer, &buzzerUserFunctions);
+  RC522_Init(&rc522, &RC522Descriptor);
 
   ST7789_Init(&display, &displayDescriptor);
   ST7789_SetOffsetY(&display, 20);
   ST7789_SetRotation(&display, ST7789_ROTATION_VERTICAL_180);
-  ST7789_FillScreen(&display, RGB565(0, 0, 0));
-
+  ST7789_FillScreen(&display, RGB565(255, 255, 255));
   MicroGFX_Init(&gfxDisplay, &gfxDisplayDescriptor);
-  MicroGFX_DrawChar(&gfxDisplay, 40, 40, 'A', RGB565(255, 255, 255), FONT_11X18);
 
-
-
-  MatrixKeyboard_Init(&key, &keyUserFunctions);
-
-
-
-  LED_Init(&ledB, &ledUserFunctions);
+  MicroGFX_DrawString(&gfxDisplay, 10, 10, "Waiting card...      ", WHITE_RGB565, FONT_11X18);
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -618,7 +624,7 @@ void StartDefaultTask(void *argument)
   {
 	  //RC522_Run(&rc522);
 	  MatrixKeyboard_Run(&key);
-	  LED_Run(&ledB);
+	  LED_Run(&buzzer);
     osDelay(1);
   }
   /* USER CODE END 5 */
