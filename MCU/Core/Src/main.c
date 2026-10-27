@@ -316,7 +316,7 @@ void MatrixKeyboardEventCallback3x4(MatrixKeyboard_st* keyboard, MatrixKeyboardE
 				MicroGFX_FillScreen(&gfxDisplay, WHITE_RGB565);
 
 				char str[64] = {0};
-				sprintf(str, "–ë–∞–ª–∞–Ω—Å: %ld", players[currentPlayer].balance);
+				sprintf(str, "¡‡Î‡ÌÒ: %ld", players[currentPlayer].balance);
 				MicroGFX_DrawString(&gfxDisplay, 5, 10, str, BLACK_RGB565, FONT_11X18);
 			}
 
@@ -354,8 +354,8 @@ void MatrixKeyboardEventCallback3x4(MatrixKeyboard_st* keyboard, MatrixKeyboardE
 
 				MicroGFX_FillScreen(&gfxDisplay, WHITE_RGB565);
 				MicroGFX_DrawString(&gfxDisplay, 15, 10, CHOOSE_PLAYER_RU_STR, BLACK_RGB565, FONT_11X18);
-				MicroGFX_DrawString(&gfxDisplay, 5, 28, "1. –ò–≥—Ä–æ–∫ 1", BLACK_RGB565, FONT_11X18);
-				MicroGFX_DrawString(&gfxDisplay, 5, 46, "2. –ò–≥—Ä–æ–∫ 2", BLACK_RGB565, FONT_11X18);
+				MicroGFX_DrawString(&gfxDisplay, 5, 28, "1. »„ÓÍ 1", BLACK_RGB565, FONT_11X18);
+				MicroGFX_DrawString(&gfxDisplay, 5, 46, "2. »„ÓÍ 2", BLACK_RGB565, FONT_11X18);
 			}
 		}
 
@@ -390,7 +390,7 @@ void CardEvent_Callback_RC522(RC522_st* rc522, RC522_CardEvent_et event){
 				  }
 				  if(players[i].cardNum[0] == 0){
 					  char str[64] = {0};
-					  sprintf(str, "%d. –ö–∞—Ä—Ç–∞ –ò–≥—Ä–æ–∫–∞ ‚Ññ%d: %02X %02X %02X %02X", i, i, uid[0], uid[1], uid[2], uid[3]);
+					  sprintf(str, "%d.  ‡Ú‡ »„ÓÍ‡ π%d: %02X %02X %02X %02X", i, i, uid[0], uid[1], uid[2], uid[3]);
 					  MicroGFX_DrawString(&gfxDisplay, 5, 28 + i * 18, str, BLACK_RGB565, FONT_11X18);
 
 					  memcpy(players[i].cardNum, uid, 4);
