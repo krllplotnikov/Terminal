@@ -29,6 +29,8 @@
 #include "LED.h"
 
 #include "StringsLocalisation.h"
+
+#include "ModuleBuzzer.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -118,23 +120,61 @@ void StartDefaultTask(void *argument);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+//-----Variables-----
+MatrixKeyboard_st key = {0};
+RC522_st rc522Main = {0};
+ST7789_st display = {0};
+MicroGFX_st gfxDisplay = {0};
+LED_st buzzer = {0};
+
+ModuleBuzzer_st moduleBuzzer = {0};
+
+//Controller_st controller = {0};
+//
+//ModuleLed_st moduleLed = {0};
+//ModuleButton_st moduleButton = {0};
+
 uint8_t uid[4];
+//-----Variables-----
 
+
+
+//-----Function prototypes-----
 //-----RC522-----
-RC522_st rc522 = {0};
-
-void SPI_Transmit_RC522(RC522_st* rc522, uint8_t* txBuf, size_t size){
-	HAL_SPI_Transmit(&hspi1, txBuf, size, 5000);
-}
-void SPI_Receive_RC522(RC522_st* rc522, uint8_t* rxBuf, size_t size){
-	HAL_SPI_Receive(&hspi1, rxBuf, size, 5000);
-}
-void SPI_ChipSelect_RC522(RC522_st* rc522, uint8_t level){
-	HAL_GPIO_WritePin(RC522_CS_GPIO_Port, RC522_CS_Pin, level);
-}
-
+void SPI_Transmit_RC522(RC522_st* rc522, uint8_t* txBuf, size_t size);
+void SPI_Receive_RC522(RC522_st* rc522, uint8_t* rxBuf, size_t size);
+void SPI_ChipSelect_RC522(RC522_st* rc522, uint8_t level);
 void CardEvent_Callback_RC522(RC522_st* rc522, RC522_CardEvent_et event);
+//-----RC522-----
 
+//-----ST7789-----
+void SPI_Transmit_ST7789(ST7789_st* st7789, uint8_t* data, size_t size);
+void SPI_ChipSelect_ST7789(ST7789_st* st7789, uint8_t level);
+void SelectDataCommand_ST7789(ST7789_st* st7789, uint8_t level);
+//-----ST7789-----
+
+//-----MicroGFX-----
+void MicroGFX_SetPixel_Display(MicroGFX_st* gfx, uint16_t x, uint16_t y, uint16_t color);
+void MicroGFX_SetPixelArray_Display(MicroGFX_st* gfx, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t* color, uint8_t singleFlag);
+//-----MicroGFX-----
+
+//-----Keyboard-----
+void MatrixKeyboardSetRowState3x4(MatrixKeyboard_st* keyboard, uint8_t row, uint8_t state);
+uint8_t MatrixKeyboardGetColState3x4(MatrixKeyboard_st* keyboard, uint8_t col);
+void MatrixKeyboardEventCallback3x4(MatrixKeyboard_st* keyboard, MatrixKeyboardEvent_et event, uint8_t button);
+//-----Keyboard-----
+
+//-----Buzzer-----
+void SetState_Buzzer(LED_st* led, LedState_et state);
+void IndicationIsOverCallbackBuzzer(LED_st* led, LedIndications_et indication, uint8_t repeatCounter);
+//-----Buzzer-----
+//-----Function prototypes-----
+
+
+
+//-----Descriptors-----
+//-----RC522-----
 RC522_Descriptor_st RC522Descriptor = {
 		.getTick = HAL_GetTick,
 		.spiChipSelect = SPI_ChipSelect_RC522,
@@ -144,21 +184,7 @@ RC522_Descriptor_st RC522Descriptor = {
 };
 //-----RC522-----
 
-
-
 //-----ST7789-----
-ST7789_st display = {0};
-
-void SPI_Transmit_ST7789(ST7789_st* st7789, uint8_t* data, size_t size){
-  HAL_SPI_Transmit(&hspi1, data, size, 5000);
-}
-void SPI_ChipSelect_ST7789(ST7789_st* st7789, uint8_t level){
-  HAL_GPIO_WritePin(ST7789_CS_GPIO_Port, ST7789_CS_Pin, level);
-}
-void SelectDataCommand_ST7789(ST7789_st* st7789, uint8_t level){
-  HAL_GPIO_WritePin(ST7789_DC_GPIO_Port, ST7789_DC_Pin, level);
-}
-
 ST7789_Descriptor_st displayDescriptor = {
     .spiTransmit = SPI_Transmit_ST7789,
     .spiChipSelect = SPI_ChipSelect_ST7789,
@@ -168,11 +194,62 @@ ST7789_Descriptor_st displayDescriptor = {
 };
 //-----ST7789-----
 
+//-----MicroGFX-----
+MicroGFX_Descriptor_st gfxDisplayDescriptor = {
+		.setPixel = MicroGFX_SetPixel_Display,
+		.setPixelArray = MicroGFX_SetPixelArray_Display,
+		.height = 280,
+		.width = 240
+};
+//-----MicroGFX-----
 
+//-----Keyboard-----
+static MatrixKeyboardDescriptor_st keyUserFunctions = {
+		.getColState = MatrixKeyboardGetColState3x4,
+		.setRowState = MatrixKeyboardSetRowState3x4,
+		.eventCallback = MatrixKeyboardEventCallback3x4,
+		.rows = 4,
+		.cols = 3
+};
+//-----Keyboard-----
+
+//-----Buzzer-----
+LedUserFunctions_st buzzerUserFunctions = {
+		.setState = SetState_Buzzer,
+		.getTick = HAL_GetTick,
+		.indicationIsOverCallback = IndicationIsOverCallbackBuzzer
+};
+//-----Buzzer-----
+//-----Descriptors-----
+
+
+
+//-----Function definitions-----
+//-----RC522-----
+void SPI_Transmit_RC522(RC522_st* rc522, uint8_t* txBuf, size_t size){
+	HAL_SPI_Transmit(&hspi1, txBuf, size, 5000);
+}
+void SPI_Receive_RC522(RC522_st* rc522, uint8_t* rxBuf, size_t size){
+	HAL_SPI_Receive(&hspi1, rxBuf, size, 5000);
+}
+void SPI_ChipSelect_RC522(RC522_st* rc522, uint8_t level){
+	HAL_GPIO_WritePin(RC522_CS_GPIO_Port, RC522_CS_Pin, level);
+}
+//-----RC522-----
+
+//-----ST7789-----
+void SPI_Transmit_ST7789(ST7789_st* st7789, uint8_t* data, size_t size){
+  HAL_SPI_Transmit(&hspi1, data, size, 5000);
+}
+void SPI_ChipSelect_ST7789(ST7789_st* st7789, uint8_t level){
+  HAL_GPIO_WritePin(ST7789_CS_GPIO_Port, ST7789_CS_Pin, level);
+}
+void SelectDataCommand_ST7789(ST7789_st* st7789, uint8_t level){
+  HAL_GPIO_WritePin(ST7789_DC_GPIO_Port, ST7789_DC_Pin, level);
+}
+//-----ST7789-----
 
 //-----MicroGFX-----
-MicroGFX_st gfxDisplay = {0};
-
 void MicroGFX_SetPixel_Display(MicroGFX_st* gfx, uint16_t x, uint16_t y, uint16_t color){
 	if(gfx == &gfxDisplay){
 		ST7789_SetPixel(&display, x, y, color);
@@ -184,21 +261,10 @@ void MicroGFX_SetPixelArray_Display(MicroGFX_st* gfx, uint16_t x, uint16_t y, ui
 		ST7789_SetPixelArray(&display, x, y, w, h, color, singleFlag);
 	}
 }
-
-MicroGFX_Descriptor_st gfxDisplayDescriptor = {
-		.setPixel = MicroGFX_SetPixel_Display,
-		.setPixelArray = MicroGFX_SetPixelArray_Display,
-		.height = 280,
-		.width = 240
-};
 //-----MicroGFX-----
 
-
-
 //-----Keyboard-----
-static MatrixKeyboard_st key = {0};
-
-static void MatrixKeyboardSetRowState3x4(MatrixKeyboard_st* keyboard, uint8_t row, uint8_t state){
+void MatrixKeyboardSetRowState3x4(MatrixKeyboard_st* keyboard, uint8_t row, uint8_t state){
 	if(row == 0){
 		HAL_GPIO_WritePin(KEYBOARD_ROW_1_GPIO_Port, KEYBOARD_ROW_1_Pin, state);
 	}
@@ -213,7 +279,7 @@ static void MatrixKeyboardSetRowState3x4(MatrixKeyboard_st* keyboard, uint8_t ro
 	}
 }
 
-static uint8_t MatrixKeyboardGetColState3x4(MatrixKeyboard_st* keyboard, uint8_t col){
+uint8_t MatrixKeyboardGetColState3x4(MatrixKeyboard_st* keyboard, uint8_t col){
 	if(col == 0){
 		return HAL_GPIO_ReadPin(KEYBOARD_COL_1_GPIO_Port, KEYBOARD_COL_1_Pin);
 	}
@@ -226,38 +292,17 @@ static uint8_t MatrixKeyboardGetColState3x4(MatrixKeyboard_st* keyboard, uint8_t
 
 	return 0;
 }
-
-static void MatrixKeyboardEventCallback3x4(MatrixKeyboard_st* keyboard, MatrixKeyboardEvent_et event, uint8_t button);
-
-static MatrixKeyboardDescriptor_st keyUserFunctions = {
-		.getColState = MatrixKeyboardGetColState3x4,
-		.setRowState = MatrixKeyboardSetRowState3x4,
-		.eventCallback = MatrixKeyboardEventCallback3x4,
-		.rows = 4,
-		.cols = 3
-};
 //-----Keyboard-----
 
-
-
-//-----LED-----
-static LED_st buzzer = {0};
-
-static void SetState_Buzzer(LED_st* led, LedState_et state){
+//-----Buzzer-----
+void SetState_Buzzer(LED_st* led, LedState_et state){
 	if(led == &buzzer){
 		if(state == LED_STATE_ON) HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_RESET);
 		else                      HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_SET);
 	}
 }
-
-static void IndicationIsOverCallbackBuzzer(LED_st* led, LedIndications_et indication, uint8_t repeatCounter);
-
-static LedUserFunctions_st buzzerUserFunctions = {
-		.setState = SetState_Buzzer,
-		.getTick = HAL_GetTick,
-		.indicationIsOverCallback = IndicationIsOverCallbackBuzzer
-};
-//-----LED-----
+//-----Buzzer-----
+//-----Function definitions-----
 
 
 
@@ -379,7 +424,7 @@ void CardEvent_Callback_RC522(RC522_st* rc522, RC522_CardEvent_et event){
 	if(event == RC522_CARD_DETECTED){
 		USER_LOG("CARD DETECTED");
 
-		if (RC522_ReadUid(rc522, uid) == RC522_STATUS_OK){
+		if (RC522_ReadUid(&rc522Main, uid) == RC522_STATUS_OK){
 		  USER_LOG("CARD ID:%02X %02X %02X %02X", uid[0], uid[1], uid[2], uid[3]);
 
 
@@ -427,7 +472,7 @@ void CardEvent_Callback_RC522(RC522_st* rc522, RC522_CardEvent_et event){
 	}
 }
 
-static void IndicationIsOverCallbackBuzzer(LED_st* led, LedIndications_et indication, uint8_t repeatCounter){
+void IndicationIsOverCallbackBuzzer(LED_st* led, LedIndications_et indication, uint8_t repeatCounter){
 
 }
 
@@ -485,8 +530,11 @@ int main(void)
   HAL_Delay(20);
 
   MatrixKeyboard_Init(&key, &keyUserFunctions);
+
   LED_Init(&buzzer, &buzzerUserFunctions);
-  RC522_Init(&rc522, &RC522Descriptor);
+  ModuleBuzzer_Init(&moduleBuzzer, &buzzer);
+
+  RC522_Init(&rc522Main, &RC522Descriptor);
 
   ST7789_Init(&display, &displayDescriptor);
   ST7789_SetOffsetY(&display, 20);
@@ -779,7 +827,7 @@ void StartDefaultTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
-	  RC522_Run(&rc522);
+	  RC522_Run(&rc522Main);
 	  MatrixKeyboard_Run(&key);
 	  LED_Run(&buzzer);
     osDelay(1);
