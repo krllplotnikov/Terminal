@@ -227,10 +227,10 @@ LedUserFunctions_st buzzerUserFunctions = {
 //-----Function definitions-----
 //-----RC522-----
 void SPI_Transmit_RC522(RC522_st* rc522, uint8_t* txBuf, size_t size){
-	HAL_SPI_Transmit(&hspi1, txBuf, size, 5000);
+	HAL_SPI_Transmit(&hspi2, txBuf, size, 5000);
 }
 void SPI_Receive_RC522(RC522_st* rc522, uint8_t* rxBuf, size_t size){
-	HAL_SPI_Receive(&hspi1, rxBuf, size, 5000);
+	HAL_SPI_Receive(&hspi2, rxBuf, size, 5000);
 }
 void SPI_ChipSelect_RC522(RC522_st* rc522, uint8_t level){
 	HAL_GPIO_WritePin(RC522_CS_GPIO_Port, RC522_CS_Pin, level);
