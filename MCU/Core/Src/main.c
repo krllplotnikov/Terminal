@@ -22,15 +22,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "RC522.h"
-#include "ST7789.h"
-#include "MicroGFX.h"
-#include "MatrixKeyboard.h"
-#include "LED.h"
-
-#include "StringsLocalisation.h"
-
-#include "ModuleBuzzer.h"
+#include "Terminal.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
