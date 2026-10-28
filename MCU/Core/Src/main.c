@@ -317,7 +317,7 @@ void MatrixKeyboardEventCallback3x4(MatrixKeyboard_st* keyboard, MatrixKeyboardE
 			}
 		}
 
-		if(currentScreen == REG_CARD_1){
+		else if(currentScreen == REG_CARD_1){
 			if(button == 11){
 				currentScreen = ENTER_START_SUM;
 
@@ -326,9 +326,9 @@ void MatrixKeyboardEventCallback3x4(MatrixKeyboard_st* keyboard, MatrixKeyboardE
 			}
 		}
 
-		if(currentScreen == ENTER_START_SUM){
+		else if(currentScreen == ENTER_START_SUM){
 			if(button >= 0 && button <= 9){
-				startSumStr[cursor] = button + 1;
+				startSumStr[cursor] = button + 1 + 48;
 
 				MicroGFX_DrawChar(&gfxDisplay, 5 + cursor * 11, 28, startSumStr[cursor], BLACK_RGB565, FONT_11X18);
 
@@ -348,7 +348,7 @@ void MatrixKeyboardEventCallback3x4(MatrixKeyboard_st* keyboard, MatrixKeyboardE
 			}
 		}
 
-		if(currentScreen == CHOOSE_OP){
+		else if(currentScreen == CHOOSE_OP){
 			if(button == 0){
 				currentScreen = BALANCE;
 
@@ -366,7 +366,7 @@ void MatrixKeyboardEventCallback3x4(MatrixKeyboard_st* keyboard, MatrixKeyboardE
 			}
 		}
 
-		if(currentScreen == BALANCE){
+		else if(currentScreen == BALANCE){
 			if(button == 9){
 				currentScreen = CHOOSE_OP;
 
@@ -378,9 +378,9 @@ void MatrixKeyboardEventCallback3x4(MatrixKeyboard_st* keyboard, MatrixKeyboardE
 			}
 		}
 
-		if(currentScreen == ENTER_SUM){
+		else if(currentScreen == ENTER_SUM){
 			if(button >= 0 && button <= 9){
-				enterSumStr[cursor] = button + 1;
+				enterSumStr[cursor] = button + 1 + 48;
 
 				MicroGFX_DrawChar(&gfxDisplay, 5 + cursor * 11, 28, enterSumStr[cursor], BLACK_RGB565, FONT_11X18);
 
@@ -398,7 +398,7 @@ void MatrixKeyboardEventCallback3x4(MatrixKeyboard_st* keyboard, MatrixKeyboardE
 			}
 		}
 
-		if(currentScreen == CHOOSE_PL){
+		else if(currentScreen == CHOOSE_PL){
 			if(button >= 0 && button <= 1){
 				currentScreen = WAIT_CARD;
 
@@ -431,7 +431,7 @@ void CardEvent_Callback_RC522(RC522_st* rc522, RC522_CardEvent_et event){
 				  }
 				  if(player[i].cardNum[0] == 0){
 					  char str[64] = {0};
-					  sprintf(str, "Игрок #%d: %02X %02X %02X %02X", i, uid[0], uid[1], uid[2], uid[3]);
+					  sprintf(str, "Игрок #%d: %02X %02X %02X %02X", i + 1, uid[0], uid[1], uid[2], uid[3]);
 					  MicroGFX_DrawString(&gfxDisplay, 5, 28 + i * 18, str, BLACK_RGB565, FONT_11X18);
 
 					  memcpy(player[i].cardNum, uid, 4);
@@ -540,9 +540,9 @@ int main(void)
   MicroGFX_Init(&gfxDisplay, &gfxDisplayDescriptor);
   MicroGFX_FillScreen(&gfxDisplay, WHITE_RGB565);
 
-  MicroGFX_DrawString(&gfxDisplay, 5, 10, "1. " NEW_GAME_STR, BLACK_RGB565, FONT_11X18);
-  MicroGFX_DrawString(&gfxDisplay, 5, 28, "2. " CONTINUE_STR, GRAY_RGB565, FONT_11X18);
-  MicroGFX_DrawString(&gfxDisplay, 5, 46, "3. " SETTINGS_STR, GRAY_RGB565, FONT_11X18);
+  MicroGFX_DrawString(&gfxDisplay, 5, 10, "1." NEW_GAME_STR, BLACK_RGB565, FONT_11X18);
+  MicroGFX_DrawString(&gfxDisplay, 5, 28, "2." CONTINUE_STR, GRAY_RGB565, FONT_11X18);
+  MicroGFX_DrawString(&gfxDisplay, 5, 46, "3." SETTINGS_STR, GRAY_RGB565, FONT_11X18);
 
   currentScreen = START;
 
@@ -773,7 +773,7 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, BUZZER_Pin|LED_Pin|RC522_RST_Pin|RC522_CS_Pin
-                          |KEYBOARD_ROW_1_Pin|KEYBOARD_ROW_2_Pin|KEYBOARD_ROW_3_Pin, GPIO_PIN_RESET);
+                          |KEYBOARD_ROW_1_Pin|KEYBOARD_ROW_2_Pin|KEYBOARD_ROW_3_Pin|KEYBOARD_ROW_4_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : ST7789_CS_Pin ST7789_RES_Pin ST7789_DC_Pin */
   GPIO_InitStruct.Pin = ST7789_CS_Pin|ST7789_RES_Pin|ST7789_DC_Pin;
@@ -790,9 +790,9 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(BUZZER_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : LED_Pin RC522_RST_Pin RC522_CS_Pin KEYBOARD_ROW_1_Pin
-                           KEYBOARD_ROW_2_Pin KEYBOARD_ROW_3_Pin */
+                           KEYBOARD_ROW_2_Pin KEYBOARD_ROW_3_Pin KEYBOARD_ROW_4_Pin */
   GPIO_InitStruct.Pin = LED_Pin|RC522_RST_Pin|RC522_CS_Pin|KEYBOARD_ROW_1_Pin
-                          |KEYBOARD_ROW_2_Pin|KEYBOARD_ROW_3_Pin;
+                          |KEYBOARD_ROW_2_Pin|KEYBOARD_ROW_3_Pin|KEYBOARD_ROW_4_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -803,12 +803,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : KEYBOARD_ROW_4_Pin */
-  GPIO_InitStruct.Pin = KEYBOARD_ROW_4_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(KEYBOARD_ROW_4_GPIO_Port, &GPIO_InitStruct);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 
