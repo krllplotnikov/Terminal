@@ -5,6 +5,8 @@
 #include <stdint.h>
 #include "RC522.h"
 
+#define CARD_UID_LENGTH 4
+
 typedef struct ModuleRFID ModuleRFID_st;
 
 struct ModuleRFID{
@@ -17,6 +19,11 @@ extern "C" {
 
 void ModuleRFID_Init(ModuleRFID_st* moduleRFID, RC522_st* rc522);
 void ModuleRFID_Run(ModuleRFID_st* moduleRFID);
+
+//-----Weak-----
+void ModuleRFID_CardDetected(ModuleRFID_st* moduleRFID);
+void ModuleRFID_CardRemoved(ModuleRFID_st* moduleRFID);
+//-----Weak-----
 
 #ifdef __cplusplus
 }

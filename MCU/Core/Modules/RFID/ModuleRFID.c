@@ -10,3 +10,8 @@ void ModuleRFID_Init(ModuleRFID_st* moduleRFID, RC522_st* rc522){
 void ModuleRFID_Run(ModuleRFID_st* moduleRFID){
 	RC522_Run(moduleRFID->rc522);
 }
+
+//-----Weak-----
+__attribute__((weak)) void ModuleRFID_CardDetected(ModuleRFID_st* moduleRFID){}
+__attribute__((weak)) void ModuleRFID_CardRemoved(ModuleRFID_st* moduleRFID){}
+//-----Weak-----

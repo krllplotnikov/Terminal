@@ -18,6 +18,11 @@ extern "C" {
 void ModuleBuzzer_Init(ModuleBuzzer_st* moduleBuzzer, LED_st* buzzer);
 void ModuleBuzzer_Run(ModuleBuzzer_st* moduleBuzzer);
 
+void ModuleBuzzer_LongBeep(ModuleBuzzer_st* moduleBuzzer);
+void ModuleBuzzer_SingleBeep(ModuleBuzzer_st* moduleBuzzer);
+void ModuleBuzzer_DoubleBeep(ModuleBuzzer_st* moduleBuzzer);
+void ModuleBuzzer_TripleBeep(ModuleBuzzer_st* moduleBuzzer);
+
 #ifdef __cplusplus
 }
 #endif

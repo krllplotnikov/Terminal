@@ -61,14 +61,14 @@ typedef struct{
 	uint8_t id;
 	uint8_t  cardNum[4];
 	uint32_t balance;
-}Player_st;
+}Player_t;
 
 uint8_t currentScreen = START;
 uint8_t currentPlayer = 0;
 uint8_t cursor = 0;
 char startSumStr[16] = "";
 char enterSumStr[16] = "";
-Player_st players[4] = {0};
+Player_t player[4] = {0};
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -115,17 +115,17 @@ void StartDefaultTask(void *argument);
 
 //-----Variables-----
 MatrixKeyboard_st key = {0};
-RC522_st rc522Main = {0};
-ST7789_st display = {0};
-MicroGFX_st gfxDisplay = {0};
-LED_st buzzer = {0};
+RC522_st          rc522Main = {0};
+ST7789_st         display = {0};
+MicroGFX_st       gfxDisplay = {0};
+LED_st            buzzer = {0};
 
-ModuleBuzzer_st moduleBuzzer = {0};
+ModuleBuzzer_st    moduleBuzzer = {0};
+ModuleKeyboard_st  moduleKeyboard = {0};
+ModuleDisplay_st   moduleDisplay = {0};
+ModuleRFID_st      moduleRFID = {0};
 
-//Controller_st controller = {0};
-//
-//ModuleLed_st moduleLed = {0};
-//ModuleButton_st moduleButton = {0};
+Terminal_st terminal = {0};
 
 uint8_t uid[4];
 //-----Variables-----
@@ -200,8 +200,8 @@ static MatrixKeyboardDescriptor_st keyUserFunctions = {
 		.getColState = MatrixKeyboardGetColState3x4,
 		.setRowState = MatrixKeyboardSetRowState3x4,
 		.eventCallback = MatrixKeyboardEventCallback3x4,
-		.rows = 4,
-		.cols = 3
+		.cols = 3,
+		.rows = 4
 };
 //-----Keyboard-----
 
@@ -301,6 +301,8 @@ void SetState_Buzzer(LED_st* led, LedState_et state){
 //-----Callbacks-----
 void MatrixKeyboardEventCallback3x4(MatrixKeyboard_st* keyboard, MatrixKeyboardEvent_et event, uint8_t button){
 	if(event == MATRIX_KEYBOARD_EVENT_PRESS){
+		ModuleKeyboard_Click(&moduleKeyboard, button);
+
 		USER_LOG("Keyboard PRESS: %d", button);
 
 		LED_SetIndication(&buzzer, LED_INDICATION_SINGLE_BLINK, 1);
@@ -337,7 +339,7 @@ void MatrixKeyboardEventCallback3x4(MatrixKeyboard_st* keyboard, MatrixKeyboardE
 				cursor = 0;
 				currentScreen = WAIT_CARD;
 				for(uint8_t i = 0; i < 4; i++){
-					players[i].balance = atoi(startSumStr);
+					player[i].balance = atoi(startSumStr);
 				}
 				memset(startSumStr, 0, 16);
 
@@ -353,7 +355,7 @@ void MatrixKeyboardEventCallback3x4(MatrixKeyboard_st* keyboard, MatrixKeyboardE
 				MicroGFX_FillScreen(&gfxDisplay, WHITE_RGB565);
 
 				char str[64] = {0};
-				sprintf(str, "Баланс: %ld", players[currentPlayer].balance);
+				sprintf(str, "Баланс: %ld", player[currentPlayer].balance);
 				MicroGFX_DrawString(&gfxDisplay, 5, 10, str, BLACK_RGB565, FONT_11X18);
 			}
 
@@ -400,8 +402,8 @@ void MatrixKeyboardEventCallback3x4(MatrixKeyboard_st* keyboard, MatrixKeyboardE
 			if(button >= 0 && button <= 1){
 				currentScreen = WAIT_CARD;
 
-				players[currentPlayer].balance -= atoi(enterSumStr);
-				players[button].balance += atoi(enterSumStr);
+				player[currentPlayer].balance -= atoi(enterSumStr);
+				player[button].balance += atoi(enterSumStr);
 
 				MicroGFX_FillScreen(&gfxDisplay, WHITE_RGB565);
 				MicroGFX_DrawString(&gfxDisplay, 15, 10, WAIT_CARD_STR, BLACK_RGB565, FONT_11X18);
@@ -414,6 +416,8 @@ void MatrixKeyboardEventCallback3x4(MatrixKeyboard_st* keyboard, MatrixKeyboardE
 
 void CardEvent_Callback_RC522(RC522_st* rc522, RC522_CardEvent_et event){
 	if(event == RC522_CARD_DETECTED){
+		ModuleRFID_CardDetected(&moduleRFID);
+
 		USER_LOG("CARD DETECTED");
 
 		if (RC522_ReadUid(&rc522Main, uid) == RC522_STATUS_OK){
@@ -422,16 +426,16 @@ void CardEvent_Callback_RC522(RC522_st* rc522, RC522_CardEvent_et event){
 
 		  if(currentScreen == REG_CARD_1){
 			  for(uint8_t i = 0; i < 4; i++){
-				  if(!memcmp(players[i].cardNum, uid, 4)){
+				  if(!memcmp(player[i].cardNum, uid, 4)){
 					  break;
 				  }
-				  if(players[i].cardNum[0] == 0){
+				  if(player[i].cardNum[0] == 0){
 					  char str[64] = {0};
 					  sprintf(str, "Игрок #%d: %02X %02X %02X %02X", i, uid[0], uid[1], uid[2], uid[3]);
 					  MicroGFX_DrawString(&gfxDisplay, 5, 28 + i * 18, str, BLACK_RGB565, FONT_11X18);
 
-					  memcpy(players[i].cardNum, uid, 4);
-					  players[i].id = i;
+					  memcpy(player[i].cardNum, uid, 4);
+					  player[i].id = i;
 					  break;
 				  }
 			  }
@@ -441,7 +445,7 @@ void CardEvent_Callback_RC522(RC522_st* rc522, RC522_CardEvent_et event){
 			  currentScreen = CHOOSE_OP;
 
 			  for(uint8_t i = 0; i < 4; i++){
-				  if(!memcmp(players[i].cardNum, uid, 4)){
+				  if(!memcmp(player[i].cardNum, uid, 4)){
 					  currentPlayer = i;
 					  break;
 				  }
@@ -525,7 +529,6 @@ int main(void)
   MatrixKeyboard_Init(&key, &keyUserFunctions);
 
   LED_Init(&buzzer, &buzzerUserFunctions);
-  ModuleBuzzer_Init(&moduleBuzzer, &buzzer);
 
   RC522_Init(&rc522Main, &RC522Descriptor);
 
@@ -542,6 +545,15 @@ int main(void)
   MicroGFX_DrawString(&gfxDisplay, 5, 46, "3. " SETTINGS_STR, GRAY_RGB565, FONT_11X18);
 
   currentScreen = START;
+
+
+
+  ModuleBuzzer_Init(&moduleBuzzer, &buzzer);
+  ModuleKeyboard_Init(&moduleKeyboard, &key);
+  ModuleRFID_Init(&moduleRFID, &rc522Main);
+  ModuleDisplay_Init(&moduleDisplay, &display, &gfxDisplay);
+
+  Terminal_Init(&terminal, &moduleBuzzer, &moduleDisplay, &moduleKeyboard, &moduleRFID);
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -823,6 +835,8 @@ void StartDefaultTask(void *argument)
 	  RC522_Run(&rc522Main);
 	  MatrixKeyboard_Run(&key);
 	  LED_Run(&buzzer);
+
+	  Terminal_Run(&terminal);
     osDelay(1);
   }
   /* USER CODE END 5 */

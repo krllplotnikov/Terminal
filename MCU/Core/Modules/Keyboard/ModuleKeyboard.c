@@ -14,5 +14,5 @@ void ModuleKeyboard_Run(ModuleKeyboard_st* moduleKeyboard){
 
 
 //-----Weak-----
-__attribute__((weak)) void ModuleKeyboard_Click(ModuleKeyboard_st* moduleKeyboard){}
+__attribute__((weak)) void ModuleKeyboard_Click(ModuleKeyboard_st* moduleKeyboard, KeyboardKey_et key){}
 //-----Weak-----
