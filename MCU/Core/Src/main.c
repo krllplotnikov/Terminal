@@ -319,7 +319,7 @@ void MatrixKeyboardEventCallback3x4(MatrixKeyboard_st* keyboard, MatrixKeyboardE
 				currentScreen = REG_CARD_1;
 
 				MicroGFX_FillScreen(&gfxDisplay, WHITE_RGB565);
-				MicroGFX_DrawString(&gfxDisplay, 15, 10, REG_CARD_RU_STR, BLACK_RGB565, FONT_11X18);
+				MicroGFX_DrawString(&gfxDisplay, 15, 10, REG_CARD_STR, BLACK_RGB565, FONT_11X18);
 			}
 		}
 
@@ -328,7 +328,7 @@ void MatrixKeyboardEventCallback3x4(MatrixKeyboard_st* keyboard, MatrixKeyboardE
 				currentScreen = ENTER_START_SUM;
 
 				MicroGFX_FillScreen(&gfxDisplay, WHITE_RGB565);
-				MicroGFX_DrawString(&gfxDisplay, 15, 10, ENTER_START_SUM_RU_STR, BLACK_RGB565, FONT_11X18);
+				MicroGFX_DrawString(&gfxDisplay, 15, 10, ENTER_START_SUM_STR, BLACK_RGB565, FONT_11X18);
 			}
 		}
 
@@ -350,7 +350,7 @@ void MatrixKeyboardEventCallback3x4(MatrixKeyboard_st* keyboard, MatrixKeyboardE
 				memset(startSumStr, 0, 16);
 
 				MicroGFX_FillScreen(&gfxDisplay, WHITE_RGB565);
-				MicroGFX_DrawString(&gfxDisplay, 15, 10, WAIT_CARD_RU_STR, BLACK_RGB565, FONT_11X18);
+				MicroGFX_DrawString(&gfxDisplay, 15, 10, WAIT_CARD_STR, BLACK_RGB565, FONT_11X18);
 			}
 		}
 
@@ -368,7 +368,7 @@ void MatrixKeyboardEventCallback3x4(MatrixKeyboard_st* keyboard, MatrixKeyboardE
 			if(button == 1){
 				currentScreen = ENTER_SUM;
 				MicroGFX_FillScreen(&gfxDisplay, WHITE_RGB565);
-				MicroGFX_DrawString(&gfxDisplay, 15, 10, ENTER_SUM_RU_STR, BLACK_RGB565, FONT_11X18);
+				MicroGFX_DrawString(&gfxDisplay, 15, 10, ENTER_SUM_STR, BLACK_RGB565, FONT_11X18);
 			}
 		}
 
@@ -377,10 +377,10 @@ void MatrixKeyboardEventCallback3x4(MatrixKeyboard_st* keyboard, MatrixKeyboardE
 				currentScreen = CHOOSE_OP;
 
 				MicroGFX_FillScreen(&gfxDisplay, WHITE_RGB565);
-				MicroGFX_DrawString(&gfxDisplay, 15, 10, CHOOSE_OP_RU_STR, BLACK_RGB565, FONT_11X18);
-				MicroGFX_DrawString(&gfxDisplay, 5, 28, "1." CHECK_BALANCE_RU_STR, BLACK_RGB565, FONT_11X18);
-				MicroGFX_DrawString(&gfxDisplay, 5, 46, "2." SEND_TO_PLAYER_RU_STR, BLACK_RGB565, FONT_11X18);
-				MicroGFX_DrawString(&gfxDisplay, 5, 64, "3." SEND_TO_BANK_RU_STR, GRAY_RGB565, FONT_11X18);
+				MicroGFX_DrawString(&gfxDisplay, 15, 10, CHOOSE_OP_STR, BLACK_RGB565, FONT_11X18);
+				MicroGFX_DrawString(&gfxDisplay, 5, 28, "1." CHECK_BALANCE_STR, BLACK_RGB565, FONT_11X18);
+				MicroGFX_DrawString(&gfxDisplay, 5, 46, "2." SEND_TO_PLAYER_STR, BLACK_RGB565, FONT_11X18);
+				MicroGFX_DrawString(&gfxDisplay, 5, 64, "3." SEND_TO_BANK_STR, GRAY_RGB565, FONT_11X18);
 			}
 		}
 
@@ -398,7 +398,7 @@ void MatrixKeyboardEventCallback3x4(MatrixKeyboard_st* keyboard, MatrixKeyboardE
 				currentScreen = CHOOSE_PL;
 
 				MicroGFX_FillScreen(&gfxDisplay, WHITE_RGB565);
-				MicroGFX_DrawString(&gfxDisplay, 15, 10, CHOOSE_PLAYER_RU_STR, BLACK_RGB565, FONT_11X18);
+				MicroGFX_DrawString(&gfxDisplay, 15, 10, CHOOSE_PLAYER_STR, BLACK_RGB565, FONT_11X18);
 				MicroGFX_DrawString(&gfxDisplay, 5, 28, "1.Игрок 1", BLACK_RGB565, FONT_11X18);
 				MicroGFX_DrawString(&gfxDisplay, 5, 46, "2.Игрок 2", BLACK_RGB565, FONT_11X18);
 			}
@@ -412,7 +412,7 @@ void MatrixKeyboardEventCallback3x4(MatrixKeyboard_st* keyboard, MatrixKeyboardE
 				players[button].balance += atoi(enterSumStr);
 
 				MicroGFX_FillScreen(&gfxDisplay, WHITE_RGB565);
-				MicroGFX_DrawString(&gfxDisplay, 15, 10, WAIT_CARD_RU_STR, BLACK_RGB565, FONT_11X18);
+				MicroGFX_DrawString(&gfxDisplay, 15, 10, WAIT_CARD_STR, BLACK_RGB565, FONT_11X18);
 
 				memset(enterSumStr, 0, 16);
 			}
@@ -456,10 +456,10 @@ void CardEvent_Callback_RC522(RC522_st* rc522, RC522_CardEvent_et event){
 			  }
 
 			  MicroGFX_FillScreen(&gfxDisplay, WHITE_RGB565);
-			  MicroGFX_DrawString(&gfxDisplay, 15, 10, CHOOSE_OP_RU_STR, BLACK_RGB565, FONT_11X18);
-			  MicroGFX_DrawString(&gfxDisplay, 5, 28, "1." CHECK_BALANCE_RU_STR, BLACK_RGB565, FONT_11X18);
-			  MicroGFX_DrawString(&gfxDisplay, 5, 46, "2." SEND_TO_PLAYER_RU_STR, BLACK_RGB565, FONT_11X18);
-			  MicroGFX_DrawString(&gfxDisplay, 5, 64, "3." SEND_TO_BANK_RU_STR, GRAY_RGB565, FONT_11X18);
+			  MicroGFX_DrawString(&gfxDisplay, 15, 10, CHOOSE_OP_STR, BLACK_RGB565, FONT_11X18);
+			  MicroGFX_DrawString(&gfxDisplay, 5, 28, "1." CHECK_BALANCE_STR, BLACK_RGB565, FONT_11X18);
+			  MicroGFX_DrawString(&gfxDisplay, 5, 46, "2." SEND_TO_PLAYER_STR, BLACK_RGB565, FONT_11X18);
+			  MicroGFX_DrawString(&gfxDisplay, 5, 64, "3." SEND_TO_BANK_STR, GRAY_RGB565, FONT_11X18);
 		  }
 		}
 		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
@@ -545,9 +545,9 @@ int main(void)
   MicroGFX_Init(&gfxDisplay, &gfxDisplayDescriptor);
   MicroGFX_FillScreen(&gfxDisplay, WHITE_RGB565);
 
-  MicroGFX_DrawString(&gfxDisplay, 5, 10, "1. " NEW_GAME_RU_STR, BLACK_RGB565, FONT_11X18);
-  MicroGFX_DrawString(&gfxDisplay, 5, 28, "2. " CONTINUE_RU_STR, GRAY_RGB565, FONT_11X18);
-  MicroGFX_DrawString(&gfxDisplay, 5, 46, "3. " SETTINGS_RU_STR, GRAY_RGB565, FONT_11X18);
+  MicroGFX_DrawString(&gfxDisplay, 5, 10, "1. " NEW_GAME_STR, BLACK_RGB565, FONT_11X18);
+  MicroGFX_DrawString(&gfxDisplay, 5, 28, "2. " CONTINUE_STR, GRAY_RGB565, FONT_11X18);
+  MicroGFX_DrawString(&gfxDisplay, 5, 46, "3. " SETTINGS_STR, GRAY_RGB565, FONT_11X18);
 
   currentScreen = START;
   /* USER CODE END 2 */
