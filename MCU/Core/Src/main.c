@@ -378,9 +378,9 @@ void MatrixKeyboardEventCallback3x4(MatrixKeyboard_st* keyboard, MatrixKeyboardE
 
 				MicroGFX_FillScreen(&gfxDisplay, WHITE_RGB565);
 				MicroGFX_DrawString(&gfxDisplay, 15, 10, CHOOSE_OP_RU_STR, BLACK_RGB565, FONT_11X18);
-				MicroGFX_DrawString(&gfxDisplay, 5, 28, "1. " CHECK_BALANCE_RU_STR, BLACK_RGB565, FONT_11X18);
-				MicroGFX_DrawString(&gfxDisplay, 5, 46, "2. " SEND_TO_PLAYER_RU_STR, BLACK_RGB565, FONT_11X18);
-				MicroGFX_DrawString(&gfxDisplay, 5, 64, "3. " SEND_TO_BANK_RU_STR, GRAY_RGB565, FONT_11X18);
+				MicroGFX_DrawString(&gfxDisplay, 5, 28, "1." CHECK_BALANCE_RU_STR, BLACK_RGB565, FONT_11X18);
+				MicroGFX_DrawString(&gfxDisplay, 5, 46, "2." SEND_TO_PLAYER_RU_STR, BLACK_RGB565, FONT_11X18);
+				MicroGFX_DrawString(&gfxDisplay, 5, 64, "3." SEND_TO_BANK_RU_STR, GRAY_RGB565, FONT_11X18);
 			}
 		}
 
@@ -399,8 +399,8 @@ void MatrixKeyboardEventCallback3x4(MatrixKeyboard_st* keyboard, MatrixKeyboardE
 
 				MicroGFX_FillScreen(&gfxDisplay, WHITE_RGB565);
 				MicroGFX_DrawString(&gfxDisplay, 15, 10, CHOOSE_PLAYER_RU_STR, BLACK_RGB565, FONT_11X18);
-				MicroGFX_DrawString(&gfxDisplay, 5, 28, "1. Игрок 1", BLACK_RGB565, FONT_11X18);
-				MicroGFX_DrawString(&gfxDisplay, 5, 46, "2. Игрок 2", BLACK_RGB565, FONT_11X18);
+				MicroGFX_DrawString(&gfxDisplay, 5, 28, "1.Игрок 1", BLACK_RGB565, FONT_11X18);
+				MicroGFX_DrawString(&gfxDisplay, 5, 46, "2.Игрок 2", BLACK_RGB565, FONT_11X18);
 			}
 		}
 
@@ -435,11 +435,12 @@ void CardEvent_Callback_RC522(RC522_st* rc522, RC522_CardEvent_et event){
 				  }
 				  if(players[i].cardNum[0] == 0){
 					  char str[64] = {0};
-					  sprintf(str, "%d. Карта Игрока №%d: %02X %02X %02X %02X", i, i, uid[0], uid[1], uid[2], uid[3]);
+					  sprintf(str, "Игрок #%d: %02X %02X %02X %02X", i, uid[0], uid[1], uid[2], uid[3]);
 					  MicroGFX_DrawString(&gfxDisplay, 5, 28 + i * 18, str, BLACK_RGB565, FONT_11X18);
 
 					  memcpy(players[i].cardNum, uid, 4);
 					  players[i].id = i;
+					  break;
 				  }
 			  }
 		  }
@@ -456,9 +457,9 @@ void CardEvent_Callback_RC522(RC522_st* rc522, RC522_CardEvent_et event){
 
 			  MicroGFX_FillScreen(&gfxDisplay, WHITE_RGB565);
 			  MicroGFX_DrawString(&gfxDisplay, 15, 10, CHOOSE_OP_RU_STR, BLACK_RGB565, FONT_11X18);
-			  MicroGFX_DrawString(&gfxDisplay, 5, 28, "1. " CHECK_BALANCE_RU_STR, BLACK_RGB565, FONT_11X18);
-			  MicroGFX_DrawString(&gfxDisplay, 5, 46, "2. " SEND_TO_PLAYER_RU_STR, BLACK_RGB565, FONT_11X18);
-			  MicroGFX_DrawString(&gfxDisplay, 5, 64, "3. " SEND_TO_BANK_RU_STR, GRAY_RGB565, FONT_11X18);
+			  MicroGFX_DrawString(&gfxDisplay, 5, 28, "1." CHECK_BALANCE_RU_STR, BLACK_RGB565, FONT_11X18);
+			  MicroGFX_DrawString(&gfxDisplay, 5, 46, "2." SEND_TO_PLAYER_RU_STR, BLACK_RGB565, FONT_11X18);
+			  MicroGFX_DrawString(&gfxDisplay, 5, 64, "3." SEND_TO_BANK_RU_STR, GRAY_RGB565, FONT_11X18);
 		  }
 		}
 		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
