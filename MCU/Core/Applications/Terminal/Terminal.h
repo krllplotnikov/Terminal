@@ -45,6 +45,7 @@ struct Terminal{
 	TempData_st tempData;
 	TerminalState_et state;
 	Player_st players[MAX_PLAYERS];
+	uint8_t playersNum;
 };
 
 #ifdef __cplusplus

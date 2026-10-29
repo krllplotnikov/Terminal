@@ -23,6 +23,9 @@ void ModuleDisplay_Init(ModuleDisplay_st* moduleDisplay, ST7789_st* st7789, Micr
 void ModuleDisplay_Run(ModuleDisplay_st* moduleDisplay);
 
 void ModuleDisplay_DrawStartScreen(ModuleDisplay_st* moduleDisplay);
+void ModuleDisplay_DrawCardRegistrationScreen(ModuleDisplay_st* moduleDisplay);
+
+void ModuleDisplay_DrawRegisterPlayerCard(ModuleDisplay_st* moduleDisplay, uint8_t* uid, uint8_t playerNum);
 
 #ifdef __cplusplus
 }
