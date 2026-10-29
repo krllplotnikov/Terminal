@@ -6,6 +6,8 @@
 #include "ST7789.h"
 #include "MicroGFX.h"
 
+#include "StringsLocalisation.h"
+
 typedef struct ModuleDisplay ModuleDisplay_st;
 
 struct ModuleDisplay{
@@ -19,6 +21,8 @@ extern "C" {
 
 void ModuleDisplay_Init(ModuleDisplay_st* moduleDisplay, ST7789_st* st7789, MicroGFX_st* gfx);
 void ModuleDisplay_Run(ModuleDisplay_st* moduleDisplay);
+
+void ModuleDisplay_DrawStartScreen(ModuleDisplay_st* moduleDisplay);
 
 #ifdef __cplusplus
 }

@@ -20,6 +20,7 @@ typedef struct Player Player_st;
 enum TerminalState{
 	TERMINAL_STATE_START,
 	TERMINAL_STATE_CARD_REGISTRATION,
+	TERMINAL_STATE_ENTER_START_AMOUNT,
 };
 
 struct Player{
@@ -29,8 +30,8 @@ struct Player{
 };
 
 struct TempData{
-	uint8_t currentUID[CARD_UID_LENGTH];
 	uint8_t currentPlayerID;
+	uint8_t currentCardUID[CARD_UID_LENGTH];
 	char startSumStr[MAX_TEMP_STR_LENGTH];
 	char enterSumStr[MAX_TEMP_STR_LENGTH];
 };
@@ -41,6 +42,7 @@ struct Terminal{
 	ModuleKeyboard_st*   modleKeyboard;
 	ModuleRFID_st*       moduleRFID;
 
+	TempData_st tempData;
 	TerminalState_et state;
 	Player_st players[MAX_PLAYERS];
 };

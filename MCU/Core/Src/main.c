@@ -27,48 +27,7 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-#define ENABLE_USER_LOG   1
-#define ENABLE_DEBUG_LOG  0 // Test with this disabled
 
-#if ENABLE_USER_LOG
-  #define USER_LOG(fmt, ...) printf("[USER] " fmt "\r\n", ##__VA_ARGS__)
-#else
-  #define USER_LOG(fmt, ...)
-#endif
-
-#if ENABLE_DEBUG_LOG
-  #define DEBUG_LOG(fmt, ...) printf("[DEBUG] " fmt "\r\n", ##__VA_ARGS__)
-#else
-  #define DEBUG_LOG(fmt, ...)
-#endif
-
-
-typedef enum{
-	START,
-	REG_CARD_1,
-	REG_CARD_2,
-	ENTER_START_SUM,
-	WAIT_CARD,
-	ENTER_PIN,
-	CHOOSE_OP,
-	ENTER_SUM,
-	CHOOSE_PL,
-	CONFIRM,
-	BALANCE,
-}Screen_et;
-
-typedef struct{
-	uint8_t id;
-	uint8_t  cardNum[4];
-	uint32_t balance;
-}Player_t;
-
-uint8_t currentScreen = START;
-uint8_t currentPlayer = 0;
-uint8_t cursor = 0;
-char startSumStr[16] = "";
-char enterSumStr[16] = "";
-Player_t player[4] = {0};
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -126,8 +85,6 @@ ModuleDisplay_st   moduleDisplay = {0};
 ModuleRFID_st      moduleRFID = {0};
 
 Terminal_st terminal = {0};
-
-uint8_t uid[4];
 //-----Variables-----
 
 
@@ -302,115 +259,6 @@ void SetState_Buzzer(LED_st* led, LedState_et state){
 void MatrixKeyboardEventCallback3x4(MatrixKeyboard_st* keyboard, MatrixKeyboardEvent_et event, uint8_t button){
 	if(event == MATRIX_KEYBOARD_EVENT_PRESS){
 		ModuleKeyboard_Click(&moduleKeyboard, button);
-
-		USER_LOG("Keyboard PRESS: %d", button);
-
-		LED_SetIndication(&buzzer, LED_INDICATION_SINGLE_BLINK, 1);
-
-
-		if(currentScreen == START){
-			if(button == 0){
-				currentScreen = REG_CARD_1;
-
-				MicroGFX_FillScreen(&gfxDisplay, WHITE_RGB565);
-				MicroGFX_DrawString(&gfxDisplay, 15, 10, REG_CARD_STR, BLACK_RGB565, FONT_11X18);
-			}
-		}
-
-		else if(currentScreen == REG_CARD_1){
-			if(button == 11){
-				currentScreen = ENTER_START_SUM;
-
-				MicroGFX_FillScreen(&gfxDisplay, WHITE_RGB565);
-				MicroGFX_DrawString(&gfxDisplay, 15, 10, ENTER_START_SUM_STR, BLACK_RGB565, FONT_11X18);
-			}
-		}
-
-		else if(currentScreen == ENTER_START_SUM){
-			if(button >= 0 && button <= 9){
-				startSumStr[cursor] = button + 1 + 48;
-
-				MicroGFX_DrawChar(&gfxDisplay, 5 + cursor * 11, 28, startSumStr[cursor], BLACK_RGB565, FONT_11X18);
-
-				cursor++;
-			}
-
-			if(button == 11){
-				cursor = 0;
-				currentScreen = WAIT_CARD;
-				for(uint8_t i = 0; i < 4; i++){
-					player[i].balance = atoi(startSumStr);
-				}
-				memset(startSumStr, 0, 16);
-
-				MicroGFX_FillScreen(&gfxDisplay, WHITE_RGB565);
-				MicroGFX_DrawString(&gfxDisplay, 15, 10, WAIT_CARD_STR, BLACK_RGB565, FONT_11X18);
-			}
-		}
-
-		else if(currentScreen == CHOOSE_OP){
-			if(button == 0){
-				currentScreen = BALANCE;
-
-				MicroGFX_FillScreen(&gfxDisplay, WHITE_RGB565);
-
-				char str[64] = {0};
-				sprintf(str, "Баланс: %ld", player[currentPlayer].balance);
-				MicroGFX_DrawString(&gfxDisplay, 5, 10, str, BLACK_RGB565, FONT_11X18);
-			}
-
-			if(button == 1){
-				currentScreen = ENTER_SUM;
-				MicroGFX_FillScreen(&gfxDisplay, WHITE_RGB565);
-				MicroGFX_DrawString(&gfxDisplay, 15, 10, ENTER_SUM_STR, BLACK_RGB565, FONT_11X18);
-			}
-		}
-
-		else if(currentScreen == BALANCE){
-			if(button == 9){
-				currentScreen = CHOOSE_OP;
-
-				MicroGFX_FillScreen(&gfxDisplay, WHITE_RGB565);
-				MicroGFX_DrawString(&gfxDisplay, 15, 10, CHOOSE_OP_STR, BLACK_RGB565, FONT_11X18);
-				MicroGFX_DrawString(&gfxDisplay, 5, 28, "1." CHECK_BALANCE_STR, BLACK_RGB565, FONT_11X18);
-				MicroGFX_DrawString(&gfxDisplay, 5, 46, "2." SEND_TO_PLAYER_STR, BLACK_RGB565, FONT_11X18);
-				MicroGFX_DrawString(&gfxDisplay, 5, 64, "3." SEND_TO_BANK_STR, GRAY_RGB565, FONT_11X18);
-			}
-		}
-
-		else if(currentScreen == ENTER_SUM){
-			if(button >= 0 && button <= 9){
-				enterSumStr[cursor] = button + 1 + 48;
-
-				MicroGFX_DrawChar(&gfxDisplay, 5 + cursor * 11, 28, enterSumStr[cursor], BLACK_RGB565, FONT_11X18);
-
-				cursor++;
-			}
-
-			if(button == 11){
-				cursor = 0;
-				currentScreen = CHOOSE_PL;
-
-				MicroGFX_FillScreen(&gfxDisplay, WHITE_RGB565);
-				MicroGFX_DrawString(&gfxDisplay, 15, 10, CHOOSE_PLAYER_STR, BLACK_RGB565, FONT_11X18);
-				MicroGFX_DrawString(&gfxDisplay, 5, 28, "1.Игрок 1", BLACK_RGB565, FONT_11X18);
-				MicroGFX_DrawString(&gfxDisplay, 5, 46, "2.Игрок 2", BLACK_RGB565, FONT_11X18);
-			}
-		}
-
-		else if(currentScreen == CHOOSE_PL){
-			if(button >= 0 && button <= 1){
-				currentScreen = WAIT_CARD;
-
-				player[currentPlayer].balance -= atoi(enterSumStr);
-				player[button].balance += atoi(enterSumStr);
-
-				MicroGFX_FillScreen(&gfxDisplay, WHITE_RGB565);
-				MicroGFX_DrawString(&gfxDisplay, 15, 10, WAIT_CARD_STR, BLACK_RGB565, FONT_11X18);
-
-				memset(enterSumStr, 0, 16);
-			}
-		}
 	}
 }
 
@@ -418,52 +266,10 @@ void CardEvent_Callback_RC522(RC522_st* rc522, RC522_CardEvent_et event){
 	if(event == RC522_CARD_DETECTED){
 		ModuleRFID_CardDetected(&moduleRFID);
 
-		USER_LOG("CARD DETECTED");
-
-		if (RC522_ReadUid(&rc522Main, uid) == RC522_STATUS_OK){
-		  USER_LOG("CARD ID:%02X %02X %02X %02X", uid[0], uid[1], uid[2], uid[3]);
-
-
-		  if(currentScreen == REG_CARD_1){
-			  for(uint8_t i = 0; i < 4; i++){
-				  if(!memcmp(player[i].cardNum, uid, 4)){
-					  break;
-				  }
-				  if(player[i].cardNum[0] == 0){
-					  char str[64] = {0};
-					  sprintf(str, "Игрок #%d: %02X %02X %02X %02X", i + 1, uid[0], uid[1], uid[2], uid[3]);
-					  MicroGFX_DrawString(&gfxDisplay, 5, 28 + i * 18, str, BLACK_RGB565, FONT_11X18);
-
-					  memcpy(player[i].cardNum, uid, 4);
-					  player[i].id = i;
-					  break;
-				  }
-			  }
-		  }
-
-		  if(currentScreen == WAIT_CARD){
-			  currentScreen = CHOOSE_OP;
-
-			  for(uint8_t i = 0; i < 4; i++){
-				  if(!memcmp(player[i].cardNum, uid, 4)){
-					  currentPlayer = i;
-					  break;
-				  }
-			  }
-
-			  MicroGFX_FillScreen(&gfxDisplay, WHITE_RGB565);
-			  MicroGFX_DrawString(&gfxDisplay, 15, 10, CHOOSE_OP_STR, BLACK_RGB565, FONT_11X18);
-			  MicroGFX_DrawString(&gfxDisplay, 5, 28, "1." CHECK_BALANCE_STR, BLACK_RGB565, FONT_11X18);
-			  MicroGFX_DrawString(&gfxDisplay, 5, 46, "2." SEND_TO_PLAYER_STR, BLACK_RGB565, FONT_11X18);
-			  MicroGFX_DrawString(&gfxDisplay, 5, 64, "3." SEND_TO_BANK_STR, GRAY_RGB565, FONT_11X18);
-		  }
-		}
 		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
 	}
 	else if(event == RC522_CARD_REMOVED){
-		USER_LOG("CARD REMOVED");
-
-
+		ModuleRFID_CardRemoved(&moduleRFID);
 
 		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
 	}
@@ -471,15 +277,6 @@ void CardEvent_Callback_RC522(RC522_st* rc522, RC522_CardEvent_et event){
 
 void IndicationIsOverCallbackBuzzer(LED_st* led, LedIndications_et indication, uint8_t repeatCounter){
 
-}
-
-
-
-int _write(int fd, unsigned char *buf, int len) {
-  if (fd == 1 || fd == 2) {                     // stdout or stderr ?
-    HAL_UART_Transmit(&huart1, buf, len, 999);  // Print to the UART
-  }
-  return len;
 }
 /* USER CODE END 0 */
 
@@ -527,26 +324,16 @@ int main(void)
   HAL_Delay(20);
 
   MatrixKeyboard_Init(&key, &keyUserFunctions);
-
   LED_Init(&buzzer, &buzzerUserFunctions);
-
   RC522_Init(&rc522Main, &RC522Descriptor);
 
   ST7789_Init(&display, &displayDescriptor);
   ST7789_SetOffsetY(&display, 20);
   ST7789_SetRotation(&display, ST7789_ROTATION_VERTICAL_180);
-  ST7789_FillScreen(&display, RGB565(255, 255, 255));
+  ST7789_FillScreen(&display, BLACK_RGB565);
 
   MicroGFX_Init(&gfxDisplay, &gfxDisplayDescriptor);
   MicroGFX_FillScreen(&gfxDisplay, WHITE_RGB565);
-
-  MicroGFX_DrawString(&gfxDisplay, 5, 10, "1." NEW_GAME_STR, BLACK_RGB565, FONT_11X18);
-  MicroGFX_DrawString(&gfxDisplay, 5, 28, "2." CONTINUE_STR, GRAY_RGB565, FONT_11X18);
-  MicroGFX_DrawString(&gfxDisplay, 5, 46, "3." SETTINGS_STR, GRAY_RGB565, FONT_11X18);
-
-  currentScreen = START;
-
-
 
   ModuleBuzzer_Init(&moduleBuzzer, &buzzer);
   ModuleKeyboard_Init(&moduleKeyboard, &key);
@@ -826,11 +613,8 @@ void StartDefaultTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
-	  RC522_Run(&rc522Main);
-	  MatrixKeyboard_Run(&key);
-	  LED_Run(&buzzer);
-
 	  Terminal_Run(&terminal);
+
     osDelay(1);
   }
   /* USER CODE END 5 */
