@@ -70,6 +70,18 @@ void ModuleDisplay_DrawTransactionAmountScreen(ModuleDisplay_st* moduleDisplay){
 	MicroGFX_DrawString(moduleDisplay->gfx, 5, 30, "Сумма : ", BLACK_RGB565, FONT_11X18);
 }
 
+void ModuleDisplay_DrawChoosePlayerScreen(ModuleDisplay_st* moduleDisplay, uint8_t playerNum){
+	MicroGFX_FillScreen(moduleDisplay->gfx, WHITE_RGB565);
+	MicroGFX_DrawRect(moduleDisplay->gfx, 0, 0, moduleDisplay->st7789->descriptor.width, 10, BLACK_RGB565);
+
+	MicroGFX_DrawString(moduleDisplay->gfx, 5, 12, CHOOSE_PLAYER_STR, BLACK_RGB565, FONT_11X18);
+	for(uint8_t i = 1; i <= playerNum; i++){
+		char str[32] = {0};
+		sprintf(str, "%d.Игрок %d", i, i);
+		MicroGFX_DrawString(moduleDisplay->gfx, 5, 12 + 18 * i, str, BLACK_RGB565, FONT_11X18);
+	}
+}
+
 void ModuleDisplay_DrawRegisterPlayerCard(ModuleDisplay_st* moduleDisplay, uint8_t* uid, uint8_t playerNum){
 	char str[32] = {0};
 	sprintf(str, "Игрок %d: %02X %02X %02X %02X", playerNum, uid[0], uid[1], uid[2], uid[3]);

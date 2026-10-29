@@ -29,6 +29,7 @@ void ModuleDisplay_DrawWaitCardScreen(ModuleDisplay_st* moduleDisplay);
 void ModuleDisplay_DrawChooseOperationScreen(ModuleDisplay_st* moduleDisplay);
 void ModuleDisplay_DrawBalanceScreen(ModuleDisplay_st* moduleDisplay, uint32_t balance);
 void ModuleDisplay_DrawTransactionAmountScreen(ModuleDisplay_st* moduleDisplay);
+void ModuleDisplay_DrawChoosePlayerScreen(ModuleDisplay_st* moduleDisplay, uint8_t playerNum);
 
 void ModuleDisplay_DrawRegisterPlayerCard(ModuleDisplay_st* moduleDisplay, uint8_t* uid, uint8_t playerNum);
 

@@ -47,6 +47,15 @@ void ModuleKeyboard_Click(ModuleKeyboard_st* moduleKeyboard, KeyboardKey_et key)
 					ModuleBuzzer_LongBeep(terminalInstance->moduleBuzzer);
 				}
 			}
+			else if(key == KEYBOARD_KEY_STAR){
+				ModuleBuzzer_SingleBeep(terminalInstance->moduleBuzzer);
+				ModuleDisplay_DrawStartScreen(terminalInstance->moduleDisplay);
+
+				terminalInstance->state = TERMINAL_STATE_START;
+			}
+			else{
+				ModuleBuzzer_LongBeep(terminalInstance->moduleBuzzer);
+			}
 			break;
 		}
 
@@ -59,10 +68,10 @@ void ModuleKeyboard_Click(ModuleKeyboard_st* moduleKeyboard, KeyboardKey_et key)
 				MicroGFX_DrawRect(terminalInstance->moduleDisplay->gfx, 5, 30, terminalInstance->moduleDisplay->st7789->descriptor.width, 18, WHITE_RGB565);
 				MicroGFX_DrawString(terminalInstance->moduleDisplay->gfx, 5, 30, str, BLACK_RGB565, FONT_11X18);
 			}
-			if(key == KEYBOARD_KEY_0){
+			else if(key == KEYBOARD_KEY_0){
 				terminalInstance->tempData.startSumStr[strlen(terminalInstance->tempData.startSumStr)] = 48;
 			}
-			if(key == KEYBOARD_KEY_STAR){
+			else if(key == KEYBOARD_KEY_STAR){
 				if(strlen(terminalInstance->tempData.startSumStr) >= 1){
 					terminalInstance->tempData.startSumStr[strlen(terminalInstance->tempData.startSumStr) - 1] = 0;
 					char str[32] = {0};
@@ -72,9 +81,18 @@ void ModuleKeyboard_Click(ModuleKeyboard_st* moduleKeyboard, KeyboardKey_et key)
 				}
 				else{
 					ModuleBuzzer_LongBeep(terminalInstance->moduleBuzzer);
+					ModuleDisplay_DrawCardRegistrationScreen(terminalInstance->moduleDisplay);
+
+					memset(terminalInstance->tempData.startSumStr, 0, MAX_TEMP_STR_LENGTH);
+
+					for(uint8_t i = 0; i < MAX_PLAYERS; i++){
+						memset(terminalInstance->players[i].cardUID, 0, CARD_UID_LENGTH);
+					}
+
+					terminalInstance->state = TERMINAL_STATE_CARD_REGISTRATION;
 				}
 			}
-			if(key == KEYBOARD_KEY_SHARP){
+			else if(key == KEYBOARD_KEY_SHARP){
 				uint32_t amount = atoi(terminalInstance->tempData.startSumStr);
 
 				if(amount > 0 && amount <= 100000){
@@ -104,12 +122,13 @@ void ModuleKeyboard_Click(ModuleKeyboard_st* moduleKeyboard, KeyboardKey_et key)
 
 				terminalInstance->state = TERMINAL_STATE_BALANCE;
 			}
-			if(key == KEYBOARD_KEY_2){
+			else if(key == KEYBOARD_KEY_2){
 				ModuleBuzzer_SingleBeep(terminalInstance->moduleBuzzer);
+				ModuleDisplay_DrawChoosePlayerScreen(terminalInstance->moduleDisplay, terminalInstance->playersNum);
 
 				terminalInstance->state = TERMINAL_STATE_CHOOSE_PLAYER;
 			}
-			if(key == KEYBOARD_KEY_STAR){
+			else if(key == KEYBOARD_KEY_STAR){
 				ModuleBuzzer_SingleBeep(terminalInstance->moduleBuzzer);
 				ModuleDisplay_DrawWaitCardScreen(terminalInstance->moduleDisplay);
 
@@ -143,6 +162,12 @@ void ModuleKeyboard_Click(ModuleKeyboard_st* moduleKeyboard, KeyboardKey_et key)
 				terminalInstance->tempData.currentPlayerID = key;
 				terminalInstance->state = TERMINAL_STATE_ENTER_TRANSACTION_AMOUNT;
 			}
+			else if(key == KEYBOARD_KEY_STAR){
+				ModuleBuzzer_SingleBeep(terminalInstance->moduleBuzzer);
+				ModuleDisplay_DrawChooseOperationScreen(terminalInstance->moduleDisplay);
+
+				terminalInstance->state = TERMINAL_STATE_CHOOSE_OPERATION;
+			}
 			else{
 				ModuleBuzzer_LongBeep(terminalInstance->moduleBuzzer);
 			}
@@ -158,10 +183,10 @@ void ModuleKeyboard_Click(ModuleKeyboard_st* moduleKeyboard, KeyboardKey_et key)
 				MicroGFX_DrawRect(terminalInstance->moduleDisplay->gfx, 5, 30, terminalInstance->moduleDisplay->st7789->descriptor.width, 18, WHITE_RGB565);
 				MicroGFX_DrawString(terminalInstance->moduleDisplay->gfx, 5, 30, str, BLACK_RGB565, FONT_11X18);
 			}
-			if(key == KEYBOARD_KEY_0){
+			else if(key == KEYBOARD_KEY_0){
 				terminalInstance->tempData.enterSumStr[strlen(terminalInstance->tempData.enterSumStr)] = 48;
 			}
-			if(key == KEYBOARD_KEY_STAR){
+			else if(key == KEYBOARD_KEY_STAR){
 				if(strlen(terminalInstance->tempData.enterSumStr) >= 1){
 					terminalInstance->tempData.enterSumStr[strlen(terminalInstance->tempData.enterSumStr) - 1] = 0;
 					char str[32] = {0};
@@ -171,9 +196,14 @@ void ModuleKeyboard_Click(ModuleKeyboard_st* moduleKeyboard, KeyboardKey_et key)
 				}
 				else{
 					ModuleBuzzer_LongBeep(terminalInstance->moduleBuzzer);
+					ModuleDisplay_DrawChoosePlayerScreen(terminalInstance->moduleDisplay, terminalInstance->playersNum);
+
+					memset(terminalInstance->tempData.enterSumStr, 0, MAX_TEMP_STR_LENGTH);
+
+					terminalInstance->state = TERMINAL_STATE_CHOOSE_PLAYER;
 				}
 			}
-			if(key == KEYBOARD_KEY_SHARP){
+			else if(key == KEYBOARD_KEY_SHARP){
 				uint32_t amount = atoi(terminalInstance->tempData.enterSumStr);
 
 				if(amount > 0 && amount <= terminalInstance->players[terminalInstance->tempData.currentPlayerID].balance){
