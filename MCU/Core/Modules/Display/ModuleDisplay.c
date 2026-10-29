@@ -28,6 +28,48 @@ void ModuleDisplay_DrawCardRegistrationScreen(ModuleDisplay_st* moduleDisplay){
 	MicroGFX_DrawString(moduleDisplay->gfx, 5, 12, REG_CARD_STR, BLACK_RGB565, FONT_11X18);
 }
 
+void ModuleDisplay_DrawStartAmountScreen(ModuleDisplay_st* moduleDisplay){
+	MicroGFX_FillScreen(moduleDisplay->gfx, WHITE_RGB565);
+	MicroGFX_DrawRect(moduleDisplay->gfx, 0, 0, moduleDisplay->st7789->descriptor.width, 10, BLACK_RGB565);
+
+	MicroGFX_DrawString(moduleDisplay->gfx, 5, 12, ENTER_START_SUM_STR, BLACK_RGB565, FONT_11X18);
+	MicroGFX_DrawString(moduleDisplay->gfx, 5, 30, "Сумма : ", BLACK_RGB565, FONT_11X18);
+}
+
+void ModuleDisplay_DrawWaitCardScreen(ModuleDisplay_st* moduleDisplay){
+	MicroGFX_FillScreen(moduleDisplay->gfx, WHITE_RGB565);
+	MicroGFX_DrawRect(moduleDisplay->gfx, 0, 0, moduleDisplay->st7789->descriptor.width, 10, BLACK_RGB565);
+
+	MicroGFX_DrawString(moduleDisplay->gfx, 5, 12, WAIT_CARD_STR, BLACK_RGB565, FONT_11X18);
+}
+
+void ModuleDisplay_DrawChooseOperationScreen(ModuleDisplay_st* moduleDisplay){
+	MicroGFX_FillScreen(moduleDisplay->gfx, WHITE_RGB565);
+	MicroGFX_DrawRect(moduleDisplay->gfx, 0, 0, moduleDisplay->st7789->descriptor.width, 10, BLACK_RGB565);
+
+	MicroGFX_DrawString(moduleDisplay->gfx, 5, 12, CHOOSE_OP_STR, BLACK_RGB565, FONT_11X18);
+	MicroGFX_DrawString(moduleDisplay->gfx, 5, 30, "1." CHECK_BALANCE_STR, BLACK_RGB565, FONT_11X18);
+	MicroGFX_DrawString(moduleDisplay->gfx, 5, 48, "2." SEND_TO_PLAYER_STR, BLACK_RGB565, FONT_11X18);
+	MicroGFX_DrawString(moduleDisplay->gfx, 5, 66, "3." SEND_TO_BANK_STR, GRAY_RGB565, FONT_11X18);
+}
+
+void ModuleDisplay_DrawBalanceScreen(ModuleDisplay_st* moduleDisplay, uint32_t balance){
+	MicroGFX_FillScreen(moduleDisplay->gfx, WHITE_RGB565);
+	MicroGFX_DrawRect(moduleDisplay->gfx, 0, 0, moduleDisplay->st7789->descriptor.width, 10, BLACK_RGB565);
+
+	char str[32] = {0};
+	sprintf(str, "Баланс : %ld", balance);
+	MicroGFX_DrawString(moduleDisplay->gfx, 5, 12, str, BLACK_RGB565, FONT_11X18);
+}
+
+void ModuleDisplay_DrawTransactionAmountScreen(ModuleDisplay_st* moduleDisplay){
+	MicroGFX_FillScreen(moduleDisplay->gfx, WHITE_RGB565);
+	MicroGFX_DrawRect(moduleDisplay->gfx, 0, 0, moduleDisplay->st7789->descriptor.width, 10, BLACK_RGB565);
+
+	MicroGFX_DrawString(moduleDisplay->gfx, 5, 12, ENTER_SUM_STR, BLACK_RGB565, FONT_11X18);
+	MicroGFX_DrawString(moduleDisplay->gfx, 5, 30, "Сумма : ", BLACK_RGB565, FONT_11X18);
+}
+
 void ModuleDisplay_DrawRegisterPlayerCard(ModuleDisplay_st* moduleDisplay, uint8_t* uid, uint8_t playerNum){
 	char str[32] = {0};
 	sprintf(str, "Игрок %d: %02X %02X %02X %02X", playerNum, uid[0], uid[1], uid[2], uid[3]);
