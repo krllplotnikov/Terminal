@@ -87,3 +87,19 @@ void ModuleDisplay_DrawRegisterPlayerCard(ModuleDisplay_st* moduleDisplay, uint8
 	sprintf(str, "Èãðîê %d: %02X %02X %02X %02X", playerNum, uid[0], uid[1], uid[2], uid[3]);
 	MicroGFX_DrawString(moduleDisplay->gfx, START_X_OFFSET, START_Y_OFFSET + 18 * playerNum, str, BLACK_RGB565, FONT_11X18);
 }
+
+void ModuleDisplay_DrawStartAmountString(ModuleDisplay_st* moduleDisplay, char* amount){
+	char str[32] = {0};
+	sprintf(str, "Ñóììà : %s", amount);
+
+	MicroGFX_DrawRectFill(moduleDisplay->gfx, START_X_OFFSET, START_Y_OFFSET + 18 * 1, moduleDisplay->st7789->descriptor.width, 18, WHITE_RGB565);
+	MicroGFX_DrawString(moduleDisplay->gfx, START_X_OFFSET, START_Y_OFFSET + 18 * 1, str, BLACK_RGB565, FONT_11X18);
+}
+
+void ModuleDisplay_DrawTransactionAmountString(ModuleDisplay_st* moduleDisplay, char* amount){
+	char str[32] = {0};
+	sprintf(str, "Ñóììà : %s", amount);
+
+	MicroGFX_DrawRectFill(moduleDisplay->gfx, START_X_OFFSET, START_Y_OFFSET + 18 * 1, moduleDisplay->st7789->descriptor.width, 18, WHITE_RGB565);
+	MicroGFX_DrawString(moduleDisplay->gfx, START_X_OFFSET, START_Y_OFFSET + 18 * 1, str, BLACK_RGB565, FONT_11X18);
+}

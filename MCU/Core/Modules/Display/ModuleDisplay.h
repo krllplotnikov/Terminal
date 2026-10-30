@@ -35,6 +35,8 @@ void ModuleDisplay_DrawTransactionAmountScreen(ModuleDisplay_st* moduleDisplay);
 void ModuleDisplay_DrawChoosePlayerScreen(ModuleDisplay_st* moduleDisplay, uint8_t playerNum);
 
 void ModuleDisplay_DrawRegisterPlayerCard(ModuleDisplay_st* moduleDisplay, uint8_t* uid, uint8_t playerNum);
+void ModuleDisplay_DrawStartAmountString(ModuleDisplay_st* moduleDisplay, char* amount);
+void ModuleDisplay_DrawTransactionAmountString(ModuleDisplay_st* moduleDisplay, char* amount);
 
 #ifdef __cplusplus
 }
