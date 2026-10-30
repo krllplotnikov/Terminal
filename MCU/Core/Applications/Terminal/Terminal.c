@@ -66,6 +66,7 @@ void ModuleKeyboard_Click(ModuleKeyboard_st* moduleKeyboard, KeyboardKey_et key)
 			}
 			else if(key == KEYBOARD_KEY_0){
 				terminalInstance->tempData.startSumStr[strlen(terminalInstance->tempData.startSumStr)] = 48;
+				ModuleDisplay_DrawStartAmountString(terminalInstance->moduleDisplay, terminalInstance->tempData.startSumStr);
 			}
 			else if(key == KEYBOARD_KEY_STAR){
 				if(strlen(terminalInstance->tempData.startSumStr) >= 1){
@@ -179,6 +180,7 @@ void ModuleKeyboard_Click(ModuleKeyboard_st* moduleKeyboard, KeyboardKey_et key)
 			}
 			else if(key == KEYBOARD_KEY_0){
 				terminalInstance->tempData.enterSumStr[strlen(terminalInstance->tempData.enterSumStr)] = 48;
+				ModuleDisplay_DrawStartAmountString(terminalInstance->moduleDisplay, terminalInstance->tempData.startSumStr);
 			}
 			else if(key == KEYBOARD_KEY_STAR){
 				if(strlen(terminalInstance->tempData.enterSumStr) >= 1){
