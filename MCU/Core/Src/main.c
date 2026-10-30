@@ -276,7 +276,7 @@ void CardEvent_Callback_RC522(RC522_st* rc522, RC522_CardEvent_et event){
 }
 
 void IndicationIsOverCallbackBuzzer(LED_st* led, LedIndications_et indication, uint8_t repeatCounter){
-
+	ModuleBuzzer_IndicationIsOver(&moduleBuzzer, indication, repeatCounter);
 }
 /* USER CODE END 0 */
 

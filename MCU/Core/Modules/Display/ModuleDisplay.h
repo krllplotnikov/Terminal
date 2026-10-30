@@ -8,6 +8,9 @@
 
 #include "StringsLocalisation.h"
 
+#define START_X_OFFSET 5
+#define START_Y_OFFSET 40
+
 typedef struct ModuleDisplay ModuleDisplay_st;
 
 struct ModuleDisplay{

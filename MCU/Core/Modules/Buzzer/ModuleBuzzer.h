@@ -22,6 +22,11 @@ void ModuleBuzzer_LongBeep(ModuleBuzzer_st* moduleBuzzer);
 void ModuleBuzzer_SingleBeep(ModuleBuzzer_st* moduleBuzzer);
 void ModuleBuzzer_DoubleBeep(ModuleBuzzer_st* moduleBuzzer);
 void ModuleBuzzer_TripleBeep(ModuleBuzzer_st* moduleBuzzer);
+void ModuleBuzzer_OffBeep(ModuleBuzzer_st* moduleBuzzer);
+
+//-----Weak-----
+void ModuleBuzzer_IndicationIsOver(ModuleBuzzer_st* moduleBuzzer, LedIndications_et indication, uint8_t repeatCounter);
+//-----Weak-----
 
 #ifdef __cplusplus
 }

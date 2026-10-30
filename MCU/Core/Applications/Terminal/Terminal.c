@@ -65,8 +65,8 @@ void ModuleKeyboard_Click(ModuleKeyboard_st* moduleKeyboard, KeyboardKey_et key)
 				char str[32] = {0};
 				sprintf(str, "Ñóììà : %s", terminalInstance->tempData.startSumStr);
 
-				MicroGFX_DrawRect(terminalInstance->moduleDisplay->gfx, 5, 30, terminalInstance->moduleDisplay->st7789->descriptor.width, 18, WHITE_RGB565);
-				MicroGFX_DrawString(terminalInstance->moduleDisplay->gfx, 5, 30, str, BLACK_RGB565, FONT_11X18);
+				MicroGFX_DrawRectFill(terminalInstance->moduleDisplay->gfx, START_X_OFFSET, START_Y_OFFSET + 18 * 1, terminalInstance->moduleDisplay->st7789->descriptor.width, 18, WHITE_RGB565);
+				MicroGFX_DrawString(terminalInstance->moduleDisplay->gfx, START_X_OFFSET, START_Y_OFFSET + 18 * 1, str, BLACK_RGB565, FONT_11X18);
 			}
 			else if(key == KEYBOARD_KEY_0){
 				terminalInstance->tempData.startSumStr[strlen(terminalInstance->tempData.startSumStr)] = 48;
@@ -77,7 +77,7 @@ void ModuleKeyboard_Click(ModuleKeyboard_st* moduleKeyboard, KeyboardKey_et key)
 					char str[32] = {0};
 					sprintf(str, "Ñóììà : %s", terminalInstance->tempData.startSumStr);
 
-					MicroGFX_DrawRect(terminalInstance->moduleDisplay->gfx, 5, 30, terminalInstance->moduleDisplay->st7789->descriptor.width, 18, WHITE_RGB565);
+					MicroGFX_DrawRectFill(terminalInstance->moduleDisplay->gfx, START_X_OFFSET, START_Y_OFFSET + 18 * 1, terminalInstance->moduleDisplay->st7789->descriptor.width, 18, WHITE_RGB565);
 				}
 				else{
 					ModuleBuzzer_LongBeep(terminalInstance->moduleBuzzer);
@@ -180,8 +180,8 @@ void ModuleKeyboard_Click(ModuleKeyboard_st* moduleKeyboard, KeyboardKey_et key)
 				char str[32] = {0};
 				sprintf(str, "Ñóììà : %s", terminalInstance->tempData.enterSumStr);
 
-				MicroGFX_DrawRect(terminalInstance->moduleDisplay->gfx, 5, 30, terminalInstance->moduleDisplay->st7789->descriptor.width, 18, WHITE_RGB565);
-				MicroGFX_DrawString(terminalInstance->moduleDisplay->gfx, 5, 30, str, BLACK_RGB565, FONT_11X18);
+				MicroGFX_DrawRectFill(terminalInstance->moduleDisplay->gfx, START_X_OFFSET, START_Y_OFFSET + 18 * 1, terminalInstance->moduleDisplay->st7789->descriptor.width, 18, WHITE_RGB565);
+				MicroGFX_DrawString(terminalInstance->moduleDisplay->gfx, START_X_OFFSET, START_Y_OFFSET + 18 * 1, str, BLACK_RGB565, FONT_11X18);
 			}
 			else if(key == KEYBOARD_KEY_0){
 				terminalInstance->tempData.enterSumStr[strlen(terminalInstance->tempData.enterSumStr)] = 48;
@@ -192,7 +192,7 @@ void ModuleKeyboard_Click(ModuleKeyboard_st* moduleKeyboard, KeyboardKey_et key)
 					char str[32] = {0};
 					sprintf(str, "Ñóììà : %s", terminalInstance->tempData.enterSumStr);
 
-					MicroGFX_DrawRect(terminalInstance->moduleDisplay->gfx, 5, 30, terminalInstance->moduleDisplay->st7789->descriptor.width, 18, WHITE_RGB565);
+					MicroGFX_DrawRectFill(terminalInstance->moduleDisplay->gfx, START_X_OFFSET, START_Y_OFFSET + 18 * 1, terminalInstance->moduleDisplay->st7789->descriptor.width, 18, WHITE_RGB565);
 				}
 				else{
 					ModuleBuzzer_LongBeep(terminalInstance->moduleBuzzer);
@@ -267,6 +267,13 @@ void ModuleRFID_CardDetected(ModuleRFID_st* moduleRFID){
 	}
 }
 
+void ModuleBuzzer_IndicationIsOver(ModuleBuzzer_st* moduleBuzzer, LedIndications_et indication, uint8_t repeatCounter){
+	if(moduleBuzzer == terminalInstance->moduleBuzzer){
+		if(indication == LED_INDICATION_ON){
+			ModuleBuzzer_OffBeep(moduleBuzzer);
+		}
+	}
+}
 
 
 static uint8_t isCardExist(uint8_t* uid){
