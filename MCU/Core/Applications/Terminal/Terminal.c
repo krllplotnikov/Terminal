@@ -149,11 +149,16 @@ void ModuleKeyboard_Click(ModuleKeyboard_st* moduleKeyboard, KeyboardKey_et key)
 
 		case TERMINAL_STATE_CHOOSE_PLAYER:{
 			if(key >= KEYBOARD_KEY_1 && key <= KEYBOARD_KEY_4){
-				ModuleBuzzer_SingleBeep(terminalInstance->moduleBuzzer);
-				ModuleDisplay_DrawTransactionAmountScreen(terminalInstance->moduleDisplay);
+				if(key >= terminalInstance->playersNum && key != getPlayerIdByCardUID(terminalInstance->tempData.currentCardUID)){
+					ModuleBuzzer_SingleBeep(terminalInstance->moduleBuzzer);
+					ModuleDisplay_DrawTransactionAmountScreen(terminalInstance->moduleDisplay);
 
-				terminalInstance->tempData.currentPlayerID = key;
-				terminalInstance->state = TERMINAL_STATE_ENTER_TRANSACTION_AMOUNT;
+					terminalInstance->tempData.currentPlayerID = key;
+					terminalInstance->state = TERMINAL_STATE_ENTER_TRANSACTION_AMOUNT;
+				}
+				else{
+					ModuleBuzzer_LongBeep(terminalInstance->moduleBuzzer);
+				}
 			}
 			else if(key == KEYBOARD_KEY_STAR){
 				ModuleBuzzer_SingleBeep(terminalInstance->moduleBuzzer);
