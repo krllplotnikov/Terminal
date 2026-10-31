@@ -210,16 +210,24 @@ void ModuleKeyboard_Click(ModuleKeyboard_st* moduleKeyboard, KeyboardKey_et key)
 					terminalInstance->players[terminalInstance->tempData.currentPlayerID].balance -= amount;
 					terminalInstance->players[terminalInstance->tempData.selectedPlayerID].balance += amount;
 
-					ModuleDisplay_DrawWaitCardScreen(terminalInstance->moduleDisplay);
+					ModuleDisplay_DrawCompleteScreen(terminalInstance->moduleDisplay);
 
 					memset(terminalInstance->tempData.enterSumStr, 0, MAX_TEMP_STR_LENGTH);
 
-					terminalInstance->state = TERMINAL_STATE_WAIT_CARD;
+					terminalInstance->state = TERMINAL_STATE_COMPLETE;
 				}
 				else{
 					ModuleBuzzer_LongBeep(terminalInstance->moduleBuzzer);
 				}
 			}
+			break;
+		}
+
+		case TERMINAL_STATE_COMPLETE:{
+			ModuleBuzzer_SingleBeep(terminalInstance->moduleBuzzer);
+			ModuleDisplay_DrawWaitCardScreen(terminalInstance->moduleDisplay);
+
+			terminalInstance->state = TERMINAL_STATE_WAIT_CARD;
 			break;
 		}
 

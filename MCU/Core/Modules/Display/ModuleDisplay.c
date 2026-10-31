@@ -138,6 +138,28 @@ void ModuleDisplay_DrawChoosePlayerScreen(ModuleDisplay_st* moduleDisplay, uint8
 	}
 }
 
+void ModuleDisplay_DrawCompleteScreen(ModuleDisplay_st* moduleDisplay){
+	MicroGFX_FillScreen(moduleDisplay->gfx, BACKGROUND_COLOR);
+	MicroGFX_DrawRoundRect(moduleDisplay->gfx, 0, 0, moduleDisplay->st7789->descriptor.width, moduleDisplay->st7789->descriptor.height, 42, GREEN_RGB565);
+
+	char str[32] = {0};
+	sprintf(str, "ÏÅÐÅÂÎÄ ÍÀ ÊÀÐÒÓ");
+	uint16_t x = moduleDisplay->st7789->descriptor.width / 2 - strlen(str) * FONT_WIDTH / 2;
+	uint16_t y = 4;
+	MicroGFX_DrawString(moduleDisplay->gfx, x, y, str, FONT_COLOR_MAIN, FONT_11X18);
+	sprintf(str, "ÄÐÓÃÎÃÎ ÈÃÐÎÊÀ");
+	x = moduleDisplay->st7789->descriptor.width / 2 - strlen(str) * FONT_WIDTH / 2;
+	y = 22;
+	MicroGFX_DrawString(moduleDisplay->gfx, x, y, str, FONT_COLOR_MAIN, FONT_11X18);
+
+	sprintf(str, "Óñïåøíî!");
+	MicroGFX_DrawString(moduleDisplay->gfx, START_X_OFFSET, START_Y_OFFSET + FONT_HEIGHT * 1, str, FONT_COLOR_MAIN, FONT_11X18);
+}
+
+
+
+
+
 void ModuleDisplay_DrawRegisterPlayerCard(ModuleDisplay_st* moduleDisplay, uint8_t* uid, uint8_t playerNum){
 	char str[32] = {0};
 	sprintf(str, "Èãðîê %d: %02X %02X %02X %02X", playerNum, uid[0], uid[1], uid[2], uid[3]);
@@ -148,7 +170,7 @@ void ModuleDisplay_DrawStartAmountString(ModuleDisplay_st* moduleDisplay, char* 
 	char str[32] = {0};
 	sprintf(str, "Ñóììà: %s", amount);
 
-	MicroGFX_DrawRectFill(moduleDisplay->gfx, START_X_OFFSET, START_Y_OFFSET + FONT_HEIGHT * 1, moduleDisplay->st7789->descriptor.width, FONT_HEIGHT, BACKGROUND_COLOR);
+	MicroGFX_DrawRectFill(moduleDisplay->gfx, START_X_OFFSET, START_Y_OFFSET + FONT_HEIGHT * 1, strlen(str) * FONT_WIDTH + FONT_WIDTH, FONT_HEIGHT, BACKGROUND_COLOR);
 	MicroGFX_DrawString(moduleDisplay->gfx, START_X_OFFSET, START_Y_OFFSET + FONT_HEIGHT * 1, str, FONT_COLOR_MAIN, FONT_11X18);
 }
 
@@ -156,7 +178,7 @@ void ModuleDisplay_DrawTransactionAmountString(ModuleDisplay_st* moduleDisplay, 
 	char str[32] = {0};
 	sprintf(str, "Ñóììà: %s", amount);
 
-	MicroGFX_DrawRectFill(moduleDisplay->gfx, START_X_OFFSET, START_Y_OFFSET + FONT_HEIGHT * 1, moduleDisplay->st7789->descriptor.width, FONT_HEIGHT, BACKGROUND_COLOR);
+	MicroGFX_DrawRectFill(moduleDisplay->gfx, START_X_OFFSET, START_Y_OFFSET + FONT_HEIGHT * 1, strlen(str) * FONT_WIDTH + FONT_WIDTH, FONT_HEIGHT, BACKGROUND_COLOR);
 	MicroGFX_DrawString(moduleDisplay->gfx, START_X_OFFSET, START_Y_OFFSET + FONT_HEIGHT * 1, str, FONT_COLOR_MAIN, FONT_11X18);
 }
 
