@@ -3,6 +3,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <string.h>
 #include "ST7789.h"
 #include "MicroGFX.h"
 
@@ -37,6 +38,7 @@ void ModuleDisplay_DrawChoosePlayerScreen(ModuleDisplay_st* moduleDisplay, uint8
 void ModuleDisplay_DrawRegisterPlayerCard(ModuleDisplay_st* moduleDisplay, uint8_t* uid, uint8_t playerNum);
 void ModuleDisplay_DrawStartAmountString(ModuleDisplay_st* moduleDisplay, char* amount);
 void ModuleDisplay_DrawTransactionAmountString(ModuleDisplay_st* moduleDisplay, char* amount);
+void ModuleDisplay_DrawCurrentPlayerID(ModuleDisplay_st* moduleDisplay, uint8_t id);
 
 #ifdef __cplusplus
 }

@@ -14,7 +14,7 @@ void ModuleDisplay_Run(ModuleDisplay_st* moduleDisplay){
 
 void ModuleDisplay_DrawStartScreen(ModuleDisplay_st* moduleDisplay){
 	MicroGFX_FillScreen(moduleDisplay->gfx, WHITE_RGB565);
-	MicroGFX_DrawRectFill(moduleDisplay->gfx, 0, 0, moduleDisplay->st7789->descriptor.width, START_Y_OFFSET, BLACK_RGB565);
+	//MicroGFX_DrawRectFill(moduleDisplay->gfx, 0, 0, moduleDisplay->st7789->descriptor.width, START_Y_OFFSET, BLACK_RGB565);
 
 	MicroGFX_DrawString(moduleDisplay->gfx, START_X_OFFSET, START_Y_OFFSET + 18 * 0, "1." NEW_GAME_STR, BLACK_RGB565, FONT_11X18);
 	MicroGFX_DrawString(moduleDisplay->gfx, START_X_OFFSET, START_Y_OFFSET + 18 * 1, "2." CONTINUE_STR, GRAY_RGB565, FONT_11X18);
@@ -23,29 +23,29 @@ void ModuleDisplay_DrawStartScreen(ModuleDisplay_st* moduleDisplay){
 
 void ModuleDisplay_DrawCardRegistrationScreen(ModuleDisplay_st* moduleDisplay){
 	MicroGFX_FillScreen(moduleDisplay->gfx, WHITE_RGB565);
-	MicroGFX_DrawRectFill(moduleDisplay->gfx, 0, 0, moduleDisplay->st7789->descriptor.width, START_Y_OFFSET, BLACK_RGB565);
+	//MicroGFX_DrawRectFill(moduleDisplay->gfx, 0, 0, moduleDisplay->st7789->descriptor.width, START_Y_OFFSET, BLACK_RGB565);
 
 	MicroGFX_DrawString(moduleDisplay->gfx, START_X_OFFSET, START_Y_OFFSET, REG_CARD_STR, BLACK_RGB565, FONT_11X18);
 }
 
 void ModuleDisplay_DrawStartAmountScreen(ModuleDisplay_st* moduleDisplay){
 	MicroGFX_FillScreen(moduleDisplay->gfx, WHITE_RGB565);
-	MicroGFX_DrawRectFill(moduleDisplay->gfx, 0, 0, moduleDisplay->st7789->descriptor.width, START_Y_OFFSET, BLACK_RGB565);
+	//MicroGFX_DrawRectFill(moduleDisplay->gfx, 0, 0, moduleDisplay->st7789->descriptor.width, START_Y_OFFSET, BLACK_RGB565);
 
 	MicroGFX_DrawString(moduleDisplay->gfx, START_X_OFFSET, START_Y_OFFSET + 18 * 0, ENTER_START_SUM_STR, BLACK_RGB565, FONT_11X18);
-	MicroGFX_DrawString(moduleDisplay->gfx, START_X_OFFSET, START_Y_OFFSET + 18 * 1, "Ñóììà : ", BLACK_RGB565, FONT_11X18);
+	MicroGFX_DrawString(moduleDisplay->gfx, START_X_OFFSET, START_Y_OFFSET + 18 * 1, "Ñóììà: ", BLACK_RGB565, FONT_11X18);
 }
 
 void ModuleDisplay_DrawWaitCardScreen(ModuleDisplay_st* moduleDisplay){
 	MicroGFX_FillScreen(moduleDisplay->gfx, WHITE_RGB565);
-	MicroGFX_DrawRectFill(moduleDisplay->gfx, 0, 0, moduleDisplay->st7789->descriptor.width, START_Y_OFFSET, BLACK_RGB565);
+	//MicroGFX_DrawRectFill(moduleDisplay->gfx, 0, 0, moduleDisplay->st7789->descriptor.width, START_Y_OFFSET, BLACK_RGB565);
 
 	MicroGFX_DrawString(moduleDisplay->gfx, START_X_OFFSET, START_Y_OFFSET, WAIT_CARD_STR, BLACK_RGB565, FONT_11X18);
 }
 
 void ModuleDisplay_DrawChooseOperationScreen(ModuleDisplay_st* moduleDisplay){
 	MicroGFX_FillScreen(moduleDisplay->gfx, WHITE_RGB565);
-	MicroGFX_DrawRectFill(moduleDisplay->gfx, 0, 0, moduleDisplay->st7789->descriptor.width, START_Y_OFFSET, BLACK_RGB565);
+	//MicroGFX_DrawRectFill(moduleDisplay->gfx, 0, 0, moduleDisplay->st7789->descriptor.width, START_Y_OFFSET, BLACK_RGB565);
 
 	MicroGFX_DrawString(moduleDisplay->gfx, START_X_OFFSET, START_Y_OFFSET + 18 * 0, CHOOSE_OP_STR, BLACK_RGB565, FONT_11X18);
 	MicroGFX_DrawString(moduleDisplay->gfx, START_X_OFFSET, START_Y_OFFSET + 18 * 1, "1." CHECK_BALANCE_STR, BLACK_RGB565, FONT_11X18);
@@ -55,16 +55,16 @@ void ModuleDisplay_DrawChooseOperationScreen(ModuleDisplay_st* moduleDisplay){
 
 void ModuleDisplay_DrawBalanceScreen(ModuleDisplay_st* moduleDisplay, uint32_t balance){
 	MicroGFX_FillScreen(moduleDisplay->gfx, WHITE_RGB565);
-	MicroGFX_DrawRectFill(moduleDisplay->gfx, 0, 0, moduleDisplay->st7789->descriptor.width, START_Y_OFFSET, BLACK_RGB565);
+	//MicroGFX_DrawRectFill(moduleDisplay->gfx, 0, 0, moduleDisplay->st7789->descriptor.width, START_Y_OFFSET, BLACK_RGB565);
 
 	char str[32] = {0};
-	sprintf(str, "Áàëàíñ : %ld", balance);
+	sprintf(str, "Áàëàíñ: %ld", balance);
 	MicroGFX_DrawString(moduleDisplay->gfx, START_X_OFFSET, START_Y_OFFSET, str, BLACK_RGB565, FONT_11X18);
 }
 
 void ModuleDisplay_DrawTransactionAmountScreen(ModuleDisplay_st* moduleDisplay){
 	MicroGFX_FillScreen(moduleDisplay->gfx, WHITE_RGB565);
-	MicroGFX_DrawRectFill(moduleDisplay->gfx, 0, 0, moduleDisplay->st7789->descriptor.width, START_Y_OFFSET, BLACK_RGB565);
+	//MicroGFX_DrawRectFill(moduleDisplay->gfx, 0, 0, moduleDisplay->st7789->descriptor.width, START_Y_OFFSET, BLACK_RGB565);
 
 	MicroGFX_DrawString(moduleDisplay->gfx, START_X_OFFSET, START_Y_OFFSET + 18 * 0, ENTER_SUM_STR, BLACK_RGB565, FONT_11X18);
 	MicroGFX_DrawString(moduleDisplay->gfx, START_X_OFFSET, START_Y_OFFSET + 18 * 1, "Ñóììà : ", BLACK_RGB565, FONT_11X18);
@@ -72,7 +72,7 @@ void ModuleDisplay_DrawTransactionAmountScreen(ModuleDisplay_st* moduleDisplay){
 
 void ModuleDisplay_DrawChoosePlayerScreen(ModuleDisplay_st* moduleDisplay, uint8_t playerNum){
 	MicroGFX_FillScreen(moduleDisplay->gfx, WHITE_RGB565);
-	MicroGFX_DrawRectFill(moduleDisplay->gfx, 0, 0, moduleDisplay->st7789->descriptor.width, START_Y_OFFSET, BLACK_RGB565);
+	//MicroGFX_DrawRectFill(moduleDisplay->gfx, 0, 0, moduleDisplay->st7789->descriptor.width, START_Y_OFFSET, BLACK_RGB565);
 
 	MicroGFX_DrawString(moduleDisplay->gfx, START_X_OFFSET, START_Y_OFFSET, CHOOSE_PLAYER_STR, BLACK_RGB565, FONT_11X18);
 	for(uint8_t i = 1; i <= playerNum; i++){
@@ -90,7 +90,7 @@ void ModuleDisplay_DrawRegisterPlayerCard(ModuleDisplay_st* moduleDisplay, uint8
 
 void ModuleDisplay_DrawStartAmountString(ModuleDisplay_st* moduleDisplay, char* amount){
 	char str[32] = {0};
-	sprintf(str, "Ñóììà : %s", amount);
+	sprintf(str, "Ñóììà: %s", amount);
 
 	MicroGFX_DrawRectFill(moduleDisplay->gfx, START_X_OFFSET, START_Y_OFFSET + 18 * 1, moduleDisplay->st7789->descriptor.width, 18, WHITE_RGB565);
 	MicroGFX_DrawString(moduleDisplay->gfx, START_X_OFFSET, START_Y_OFFSET + 18 * 1, str, BLACK_RGB565, FONT_11X18);
@@ -98,8 +98,18 @@ void ModuleDisplay_DrawStartAmountString(ModuleDisplay_st* moduleDisplay, char* 
 
 void ModuleDisplay_DrawTransactionAmountString(ModuleDisplay_st* moduleDisplay, char* amount){
 	char str[32] = {0};
-	sprintf(str, "Ñóììà : %s", amount);
+	sprintf(str, "Ñóììà: %s", amount);
 
 	MicroGFX_DrawRectFill(moduleDisplay->gfx, START_X_OFFSET, START_Y_OFFSET + 18 * 1, moduleDisplay->st7789->descriptor.width, 18, WHITE_RGB565);
 	MicroGFX_DrawString(moduleDisplay->gfx, START_X_OFFSET, START_Y_OFFSET + 18 * 1, str, BLACK_RGB565, FONT_11X18);
+}
+
+void ModuleDisplay_DrawCurrentPlayerID(ModuleDisplay_st* moduleDisplay, uint8_t id){
+	char str[32] = {0};
+	sprintf(str, "Èãðîê %d", id + 1);
+
+	uint16_t x = moduleDisplay->st7789->descriptor.width / 2 - strlen(str) * 11 / 2;
+
+	MicroGFX_DrawRectFill(moduleDisplay->gfx, 0, 260, moduleDisplay->st7789->descriptor.width, 18, WHITE_RGB565);
+	MicroGFX_DrawString(moduleDisplay->gfx, x, 260, str, BLACK_RGB565, FONT_11X18);
 }

@@ -37,6 +37,7 @@ struct Player{
 struct TempData{
 	uint8_t currentPlayerID;
 	uint8_t currentCardUID[CARD_UID_LENGTH];
+	uint8_t selectedPlayerID;
 	char startSumStr[MAX_TEMP_STR_LENGTH];
 	char enterSumStr[MAX_TEMP_STR_LENGTH];
 };

@@ -113,12 +113,14 @@ void ModuleKeyboard_Click(ModuleKeyboard_st* moduleKeyboard, KeyboardKey_et key)
 				ModuleBuzzer_SingleBeep(terminalInstance->moduleBuzzer);
 				uint8_t id = getPlayerIdByCardUID(terminalInstance->tempData.currentCardUID);
 				ModuleDisplay_DrawBalanceScreen(terminalInstance->moduleDisplay, terminalInstance->players[id].balance);
+				ModuleDisplay_DrawCurrentPlayerID(terminalInstance->moduleDisplay, terminalInstance->tempData.currentPlayerID);
 
 				terminalInstance->state = TERMINAL_STATE_BALANCE;
 			}
 			else if(key == KEYBOARD_KEY_2){
 				ModuleBuzzer_SingleBeep(terminalInstance->moduleBuzzer);
 				ModuleDisplay_DrawChoosePlayerScreen(terminalInstance->moduleDisplay, terminalInstance->playersNum);
+				ModuleDisplay_DrawCurrentPlayerID(terminalInstance->moduleDisplay, terminalInstance->tempData.currentPlayerID);
 
 				terminalInstance->state = TERMINAL_STATE_CHOOSE_PLAYER;
 			}
@@ -132,13 +134,13 @@ void ModuleKeyboard_Click(ModuleKeyboard_st* moduleKeyboard, KeyboardKey_et key)
 				ModuleBuzzer_LongBeep(terminalInstance->moduleBuzzer);
 			}
 			break;
-			break;
 		}
 
 		case TERMINAL_STATE_BALANCE:{
 			if(key == KEYBOARD_KEY_STAR){
 				ModuleBuzzer_SingleBeep(terminalInstance->moduleBuzzer);
 				ModuleDisplay_DrawChooseOperationScreen(terminalInstance->moduleDisplay);
+				ModuleDisplay_DrawCurrentPlayerID(terminalInstance->moduleDisplay, terminalInstance->tempData.currentPlayerID);
 
 				terminalInstance->state = TERMINAL_STATE_CHOOSE_OPERATION;
 			}
@@ -150,11 +152,12 @@ void ModuleKeyboard_Click(ModuleKeyboard_st* moduleKeyboard, KeyboardKey_et key)
 
 		case TERMINAL_STATE_CHOOSE_PLAYER:{
 			if(key >= KEYBOARD_KEY_1 && key <= KEYBOARD_KEY_4){
-				if(key >= terminalInstance->playersNum && key != getPlayerIdByCardUID(terminalInstance->tempData.currentCardUID)){
+				if(key <= terminalInstance->playersNum && key != terminalInstance->tempData.currentPlayerID){
 					ModuleBuzzer_SingleBeep(terminalInstance->moduleBuzzer);
 					ModuleDisplay_DrawTransactionAmountScreen(terminalInstance->moduleDisplay);
+					ModuleDisplay_DrawCurrentPlayerID(terminalInstance->moduleDisplay, terminalInstance->tempData.currentPlayerID);
 
-					terminalInstance->tempData.currentPlayerID = key;
+					terminalInstance->tempData.selectedPlayerID = key;
 					terminalInstance->state = TERMINAL_STATE_ENTER_TRANSACTION_AMOUNT;
 				}
 				else{
@@ -164,6 +167,7 @@ void ModuleKeyboard_Click(ModuleKeyboard_st* moduleKeyboard, KeyboardKey_et key)
 			else if(key == KEYBOARD_KEY_STAR){
 				ModuleBuzzer_SingleBeep(terminalInstance->moduleBuzzer);
 				ModuleDisplay_DrawChooseOperationScreen(terminalInstance->moduleDisplay);
+				ModuleDisplay_DrawCurrentPlayerID(terminalInstance->moduleDisplay, terminalInstance->tempData.currentPlayerID);
 
 				terminalInstance->state = TERMINAL_STATE_CHOOSE_OPERATION;
 			}
@@ -180,7 +184,7 @@ void ModuleKeyboard_Click(ModuleKeyboard_st* moduleKeyboard, KeyboardKey_et key)
 			}
 			else if(key == KEYBOARD_KEY_0){
 				terminalInstance->tempData.enterSumStr[strlen(terminalInstance->tempData.enterSumStr)] = 48;
-				ModuleDisplay_DrawStartAmountString(terminalInstance->moduleDisplay, terminalInstance->tempData.startSumStr);
+				ModuleDisplay_DrawTransactionAmountString(terminalInstance->moduleDisplay, terminalInstance->tempData.enterSumStr);
 			}
 			else if(key == KEYBOARD_KEY_STAR){
 				if(strlen(terminalInstance->tempData.enterSumStr) >= 1){
@@ -190,6 +194,7 @@ void ModuleKeyboard_Click(ModuleKeyboard_st* moduleKeyboard, KeyboardKey_et key)
 				else{
 					ModuleBuzzer_LongBeep(terminalInstance->moduleBuzzer);
 					ModuleDisplay_DrawChoosePlayerScreen(terminalInstance->moduleDisplay, terminalInstance->playersNum);
+					ModuleDisplay_DrawCurrentPlayerID(terminalInstance->moduleDisplay, terminalInstance->tempData.currentPlayerID);
 
 					memset(terminalInstance->tempData.enterSumStr, 0, MAX_TEMP_STR_LENGTH);
 
@@ -202,9 +207,8 @@ void ModuleKeyboard_Click(ModuleKeyboard_st* moduleKeyboard, KeyboardKey_et key)
 				if(amount > 0 && amount <= terminalInstance->players[terminalInstance->tempData.currentPlayerID].balance){
 					ModuleBuzzer_SingleBeep(terminalInstance->moduleBuzzer);
 
-					uint8_t id = getPlayerIdByCardUID(terminalInstance->tempData.currentCardUID);
-					terminalInstance->players[id].balance -= amount;
-					terminalInstance->players[terminalInstance->tempData.currentPlayerID].balance += amount;
+					terminalInstance->players[terminalInstance->tempData.currentPlayerID].balance -= amount;
+					terminalInstance->players[terminalInstance->tempData.selectedPlayerID].balance += amount;
 
 					ModuleDisplay_DrawWaitCardScreen(terminalInstance->moduleDisplay);
 
@@ -243,8 +247,11 @@ void ModuleRFID_CardDetected(ModuleRFID_st* moduleRFID){
 
 			case TERMINAL_STATE_WAIT_CARD:{
 				if(isCardExist(terminalInstance->tempData.currentCardUID)){
+					terminalInstance->tempData.currentPlayerID = getPlayerIdByCardUID(terminalInstance->tempData.currentCardUID);
+
 					ModuleBuzzer_DoubleBeep(terminalInstance->moduleBuzzer);
 					ModuleDisplay_DrawChooseOperationScreen(terminalInstance->moduleDisplay);
+					ModuleDisplay_DrawCurrentPlayerID(terminalInstance->moduleDisplay, terminalInstance->tempData.currentPlayerID);
 
 					terminalInstance->state = TERMINAL_STATE_CHOOSE_OPERATION;
 				}
