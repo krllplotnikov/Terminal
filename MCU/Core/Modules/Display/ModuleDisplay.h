@@ -12,6 +12,26 @@
 #define START_X_OFFSET 5
 #define START_Y_OFFSET 40
 
+#define FONT_HEIGHT 18
+#define FONT_WIDTH  11
+
+#define DISPLAY_THEME_DARK
+//#define DISPLAY_THEME_LIGHT
+
+//#define DISPLAY_THEME DISPLAY_THEME_DARK
+
+#if defined DISPLAY_THEME_DARK
+#define BACKGROUND_COLOR        BLACK_RGB565
+#define FONT_COLOR_MAIN         WHITE_RGB565
+#define FONT_COLOR_UNAVAILABLE  GRAY_RGB565
+#define FONT_COLOR_ERROR        RED_RGB565
+#elif defined DISPLAY_THEME_LIGHT
+#define BACKGROUND_COLOR        WHITE_RGB565
+#define FONT_COLOR_MAIN         BLACK_RGB565
+#define FONT_COLOR_UNAVAILABLE  GRAY_RGB565
+#define FONT_COLOR_ERROR        RED_RGB565
+#endif
+
 typedef struct ModuleDisplay ModuleDisplay_st;
 
 struct ModuleDisplay{
